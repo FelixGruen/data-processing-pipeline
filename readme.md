@@ -1,10 +1,12 @@
-The Data Processing Pipeline library was developed to help machine learning researchers working with large training sets of image data in general and medical imaging data in particular to easily set-up, structure, and change their pre-processing during experiments.
+# The Data Processing Pipeline library
+
+The **Data Processing Pipeline** (dpp) library was developed to help machine learning researchers working with large training sets of image data in general and medical imaging data in particular to easily set-up, structure, and change their pre-processing during experiments.
 
 The Data Processing Pipeline is organized into transformations. Each transformation does exactly one thing. One transformation might clip all values to a certain range, while another might rotate an image. The functions that define a transformation actually set up a generator that reads from a Python iterator (or generator) and applies the transformation to each of its input. This means that a pipeline can be used with any other iterator and can be used like any other iterator, for example, you can iterate through all elements using a for-loop. This structure creates very readable, easily adaptable code.
 
 The documentation is available in html form under docs/index.html.
 
-# Installation
+## Installation
 
 Clone the git repository in a directory of your choise:
 
@@ -38,7 +40,7 @@ Check your PYTHONPATH variable and make sure that it actually points to the dire
     :/directory/of/your/choice/data-processing-pipeline/
 
 
-# Defining a Pre-Processing Pipeline
+## Defining a Pre-Processing Pipeline
 
 Defining a pipeline is dead simple. Simply list all the transformations you would like to perform on your data. Each transformation reads from the previous node in the pipeline, a Python generator, transforms the data, and then yields the transformed data. This means, that any node can be used like any other Python iterator, e.g. in a for-loop. Here is a little example:
 
