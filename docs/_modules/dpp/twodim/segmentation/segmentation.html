@@ -1,0 +1,1412 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>dpp.twodim.segmentation.segmentation &mdash; Data Processing Pipeline 1.0.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../../search.html"/>
+    <link rel="top" title="Data Processing Pipeline 1.0.0 documentation" href="../../../../index.html"/>
+        <link rel="up" title="Module code" href="../../../index.html"/> 
+
+  
+  <script src="../../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../../index.html" class="icon icon-home"> Data Processing Pipeline
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorials and Guides:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorial.user.html">Getting Started and User Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorial.developer.html">Developer Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">DPP Library Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../dpp.html">Helper functions (dpp package)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../dpp.reader.html">Helper functions (dpp.reader package)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../dpp.twodim.segmentation.html">Segmentation in 2D and 2.5D (dpp.twodim.segmentation package)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../dpp.twodim.segmentation.medical.html">Segmentation in 2D and 2.5D (dpp.twodim.segmentation.medical package)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../dpp.threedim.segmentation.html">Segmentation in 3D (dpp.threedim.segmentation package)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../dpp.threedim.segmentation.medical.html">Segmentation in 3D (dpp.threedim.segmentation.medical package)</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">Data Processing Pipeline</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>dpp.twodim.segmentation.segmentation</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for dpp.twodim.segmentation.segmentation</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">import</span> <span class="nn">numbers</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">scipy.ndimage</span>
+
+<span class="kn">from</span> <span class="nn">...</span> <span class="k">import</span> <span class="n">helper</span>
+
+
+<div class="viewcode-block" id="clip_img_values"><a class="viewcode-back" href="../../../../dpp.twodim.segmentation.html#dpp.twodim.segmentation.clip_img_values">[docs]</a><span class="k">def</span> <span class="nf">clip_img_values</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">minimum</span><span class="p">,</span> <span class="n">maximum</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Sets all values of the image that are above the maximum value to the maximum and</span>
+<span class="sd">    all values that are below the minimum value to the minimum.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    source : iterable</span>
+<span class="sd">        An iterable over a number of datapoints where each datapoint is a tuple of a list of inputs and a parameter dictionary.</span>
+<span class="sd">    minimum: number or None</span>
+<span class="sd">        The minimum value. Set None for no lower bound.</span>
+<span class="sd">    maximum: number or None</span>
+<span class="sd">        The maximum value. Set None for no upper bound.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gen : generator</span>
+<span class="sd">        A generator that yields each transformed datapoint as a tuple of a list of inputs and a parameter dictionary.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">minimum</span><span class="p">,</span> <span class="n">numbers</span><span class="o">.</span><span class="n">Number</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Minimum must be a number! Received: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">minimum</span><span class="p">)))</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">maximum</span><span class="p">,</span> <span class="n">numbers</span><span class="o">.</span><span class="n">Number</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Maximum must be a number! Received: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">maximum</span><span class="p">)))</span>
+
+    <span class="k">def</span> <span class="nf">transformation</span><span class="p">(</span><span class="n">input_tuple</span><span class="p">):</span>
+        <span class="n">inputs</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">input_tuple</span>
+
+        <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">minimum</span><span class="p">,</span> <span class="n">maximum</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">helper</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">transformation</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="random_crop"><a class="viewcode-back" href="../../../../dpp.twodim.segmentation.html#dpp.twodim.segmentation.random_crop">[docs]</a><span class="k">def</span> <span class="nf">random_crop</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">probability</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extracts a crop of the given height and width from a random position for a random selection of the input. The position varies</span>
+<span class="sd">    between datapoints, but is the same for all inputs of a single datapoint.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    source : iterable</span>
+<span class="sd">        An iterable over a number of datapoints where each datapoint is a tuple of a list of inputs and a parameter dictionary.</span>
+<span class="sd">    height: int</span>
+<span class="sd">        The height of the crop, the length along the first dimension.</span>
+<span class="sd">    width: int</span>
+<span class="sd">        The width of the crop, the length along the second dimension.</span>
+<span class="sd">    probability: float</span>
+<span class="sd">        The probability of cropping the input. If it is below 1, some inputs will be passed through unchanged.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gen : generator</span>
+<span class="sd">        A generator that yields each transformed datapoint as a tuple of a list of inputs and a parameter dictionary.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">height</span><span class="p">,</span> <span class="n">numbers</span><span class="o">.</span><span class="n">Integral</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Height must be an integer! Received: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">height</span><span class="p">)))</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">numbers</span><span class="o">.</span><span class="n">Integral</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Width must be an integer! Received: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">width</span><span class="p">)))</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">probability</span><span class="p">,</span> <span class="n">numbers</span><span class="o">.</span><span class="n">Number</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Probability must be a number! Received: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">probability</span><span class="p">)))</span>
+
+    <span class="k">if</span> <span class="n">probability</span> <span class="o">&gt;</span> <span class="mf">1.0</span> <span class="ow">or</span> <span class="n">probability</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Probability must be between 0.0 and 1.0! Received: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">probability</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">transformation</span><span class="p">(</span><span class="n">input_tuple</span><span class="p">):</span>
+        <span class="n">inputs</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">input_tuple</span>
+
+        <span class="k">if</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">probability</span><span class="p">):</span>  <span class="c1"># do not apply translations always, just sometimes</span>
+
+            <span class="n">shape</span> <span class="o">=</span> <span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
+
+            <span class="n">max_x</span> <span class="o">=</span> <span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">height</span>
+            <span class="n">start_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="n">max_x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="k">if</span> <span class="n">max_x</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
+            <span class="n">end_x</span> <span class="o">=</span> <span class="n">start_x</span> <span class="o">+</span> <span class="n">height</span>
+
+            <span class="n">max_y</span> <span class="o">=</span> <span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">width</span>
+            <span class="n">start_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="n">max_y</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="k">if</span> <span class="n">max_y</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
+            <span class="n">end_y</span> <span class="o">=</span> <span class="n">start_y</span> <span class="o">+</span> <span class="n">width</span>
+
+            <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">image</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">inputs</span><span class="p">):</span>
+                <span class="n">inputs</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">image</span><span class="p">[</span><span class="n">start_x</span><span class="p">:</span><span class="n">end_x</span><span class="p">,</span> <span class="n">start_y</span><span class="p">:</span><span class="n">end_y</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">helper</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">transformation</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="img_clahe"><a class="viewcode-back" href="../../../../dpp.twodim.segmentation.html#dpp.twodim.segmentation.img_clahe">[docs]</a><span class="k">def</span> <span class="nf">img_clahe</span><span class="p">(</span><span class="n">source</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Applies Contrast Limited Adaptive Histogram Equalization (CLAHE) to the image.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    source : iterable</span>
+<span class="sd">        An iterable over a number of datapoints where each datapoint is a tuple of a list of inputs and a parameter dictionary.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gen : generator</span>
+<span class="sd">        A generator that yields each transformed datapoint as a tuple of a list of inputs and a parameter dictionary.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">skimage.exposure</span>
+
+    <span class="k">def</span> <span class="nf">transformation</span><span class="p">(</span><span class="n">input_tuple</span><span class="p">):</span>
+        <span class="n">inputs</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">input_tuple</span>
+
+        <span class="n">image</span> <span class="o">=</span> <span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># there doesn&#39;t seem to be a minmax function</span>
+        <span class="n">minimum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+        <span class="n">maximum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+
+        <span class="n">image</span> <span class="o">=</span> <span class="p">(</span><span class="n">image</span> <span class="o">-</span> <span class="n">minimum</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">maximum</span> <span class="o">-</span> <span class="n">minimum</span><span class="p">)</span>
+        <span class="n">image</span> <span class="o">=</span> <span class="n">skimage</span><span class="o">.</span><span class="n">exposure</span><span class="o">.</span><span class="n">equalize_adapthist</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+        <span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">image</span> <span class="o">*</span> <span class="p">(</span><span class="n">maximum</span> <span class="o">-</span> <span class="n">minimum</span><span class="p">)</span> <span class="o">+</span> <span class="n">minimum</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">helper</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">transformation</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="random_translation"><a class="viewcode-back" href="../../../../dpp.twodim.segmentation.html#dpp.twodim.segmentation.random_translation">[docs]</a><span class="k">def</span> <span class="nf">random_translation</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">probability</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">border_usage</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">default_border</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">label_of_interest</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">default_pixel</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">default_label</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Translates a random selection of the input by a random amount. The translation varies between datapoints, but is the same for</span>
+<span class="sd">    all inputs of a single datapoint.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    source : iterable</span>
+<span class="sd">        An iterable over a number of datapoints where each datapoint is a tuple of a list of inputs and a parameter dictionary.</span>
+<span class="sd">    probability: float</span>
+<span class="sd">        The probability of translating the input. If it is below 1, some inputs will be passed through unchanged.</span>
+<span class="sd">    border_usage: float</span>
+<span class="sd">        If a label_of_interest is set, the border is defined as the area between the rectangular bounding box around the region of</span>
+<span class="sd">        interest and the edge of the image. This parameter defines how much of that border may be used for translation or, in other</span>
+<span class="sd">        words, how much of that border may end up outside of the new image.</span>
+<span class="sd">    default_border: float</span>
+<span class="sd">        The amount of translation that is possible with respect to the input size, if label_of_interest is either not specified or</span>
+<span class="sd">        not found in the input. border_usage does not apply to the default_border.</span>
+<span class="sd">    label_of_interest: int</span>
+<span class="sd">        The label of interest in the ground truth.</span>
+<span class="sd">    default_pixel: number or None</span>
+<span class="sd">        The fill value for the image input. If None, the minimum value will be used.</span>
+<span class="sd">    default_label: number or None</span>
+<span class="sd">        The fill value for the ground truth input. If None, the minimum value will be used.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gen : generator</span>
+<span class="sd">        A generator that yields each transformed datapoint as a tuple of a list of inputs and a parameter dictionary.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">probability</span><span class="p">,</span> <span class="n">numbers</span><span class="o">.</span><span class="n">Number</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Probability must be a number! Received: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">probability</span><span class="p">)))</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">border_usage</span><span class="p">,</span> <span class="n">numbers</span><span class="o">.</span><span class="n">Number</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Border usage must be a number! Received: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">border_usage</span><span class="p">)))</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">default_border</span><span class="p">,</span> <span class="n">numbers</span><span class="o">.</span><span class="n">Number</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Default border must be a number! Received: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">default_border</span><span class="p">)))</span>
+
+    <span class="k">if</span> <span class="n">label_of_interest</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">label_of_interest</span><span class="p">,</span> <span class="n">numbers</span><span class="o">.</span><span class="n">Number</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Label of interest must be a number! Received: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">label_of_interest</span><span class="p">)))</span>
+
+    <span class="k">if</span> <span class="n">default_pixel</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">default_pixel</span><span class="p">,</span> <span class="n">numbers</span><span class="o">.</span><span class="n">Number</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Default pixel must be a number! Received: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">default_pixel</span><span class="p">)))</span>
+
+    <span class="k">if</span> <span class="n">default_label</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">default_label</span><span class="p">,</span> <span class="n">numbers</span><span class="o">.</span><span class="n">Number</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Default label must be a number! Received: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">default_label</span><span class="p">)))</span>
+
+    <span class="k">if</span> <span class="n">probability</span> <span class="o">&gt;</span> <span class="mf">1.0</span> <span class="ow">or</span> <span class="n">probability</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Probability must be between 0.0 and 1.0! Received: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">probability</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">border_usage</span> <span class="o">&gt;</span> <span class="mf">1.0</span> <span class="ow">or</span> <span class="n">border_usage</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Border usage must be between 0.0 and 1.0! Received: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">border_usage</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">default_border</span> <span class="o">&gt;</span> <span class="mf">1.0</span> <span class="ow">or</span> <span class="n">default_border</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Default border must be between 0.0 and 1.0! Received: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">default_border</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">non</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">s</span> <span class="k">if</span> <span class="n">s</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">mom</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">transformation</span><span class="p">(</span><span class="n">input_tuple</span><span class="p">):</span>
+        <span class="n">inputs</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">input_tuple</span>
+
+        <span class="k">if</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">probability</span><span class="p">):</span>
+
+            <span class="n">img</span> <span class="o">=</span> <span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">label</span> <span class="o">=</span> <span class="n">inputs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">label_of_interest</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">label_of_interest</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">label</span><span class="p">:</span>
+                <span class="n">xdist</span> <span class="o">=</span> <span class="n">default_border</span> <span class="o">*</span> <span class="n">label</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">ydist</span> <span class="o">=</span> <span class="n">default_border</span> <span class="o">*</span> <span class="n">label</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">itemindex</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">label</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
+
+                <span class="n">xdist</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">itemindex</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">label</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">itemindex</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span> <span class="o">*</span> <span class="n">border_usage</span>
+                <span class="n">ydist</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">itemindex</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">label</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">itemindex</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span> <span class="o">*</span> <span class="n">border_usage</span>
+
+            <span class="n">ox</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="o">-</span><span class="n">xdist</span><span class="p">,</span> <span class="n">xdist</span><span class="p">)</span> <span class="k">if</span> <span class="n">xdist</span> <span class="o">&gt;=</span> <span class="mi">1</span> <span class="k">else</span> <span class="mi">0</span>
+            <span class="n">oy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="o">-</span><span class="n">ydist</span><span class="p">,</span> <span class="n">ydist</span><span class="p">)</span> <span class="k">if</span> <span class="n">ydist</span> <span class="o">&gt;=</span> <span class="mi">1</span> <span class="k">else</span> <span class="mi">0</span>
+
+            <span class="n">fill_value</span> <span class="o">=</span> <span class="n">default_pixel</span> <span class="k">if</span> <span class="n">default_pixel</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+            <span class="n">shift_img</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full_like</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">fill_value</span><span class="p">)</span>
+            <span class="n">shift_img</span><span class="p">[</span><span class="n">mom</span><span class="p">(</span><span class="n">ox</span><span class="p">):</span><span class="n">non</span><span class="p">(</span><span class="n">ox</span><span class="p">),</span> <span class="n">mom</span><span class="p">(</span><span class="n">oy</span><span class="p">):</span><span class="n">non</span><span class="p">(</span><span class="n">oy</span><span class="p">),</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">img</span><span class="p">[</span><span class="n">mom</span><span class="p">(</span><span class="o">-</span><span class="n">ox</span><span class="p">):</span><span class="n">non</span><span class="p">(</span><span class="o">-</span><span class="n">ox</span><span class="p">),</span> <span class="n">mom</span><span class="p">(</span><span class="o">-</span><span class="n">oy</span><span class="p">):</span><span class="n">non</span><span class="p">(</span><span class="o">-</span><span class="n">oy</span><span class="p">),</span> <span class="o">...</span><span class="p">]</span>
+            <span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">shift_img</span>
+
+            <span class="n">fill_value</span> <span class="o">=</span> <span class="n">default_label</span> <span class="k">if</span> <span class="n">default_label</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+            <span class="n">shift_label</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full_like</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">fill_value</span><span class="p">)</span>
+            <span class="n">shift_label</span><span class="p">[</span><span class="n">mom</span><span class="p">(</span><span class="n">ox</span><span class="p">):</span><span class="n">non</span><span class="p">(</span><span class="n">ox</span><span class="p">),</span> <span class="n">mom</span><span class="p">(</span><span class="n">oy</span><span class="p">):</span><span class="n">non</span><span class="p">(</span><span class="n">oy</span><span class="p">),</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">label</span><span class="p">[</span><span class="n">mom</span><span class="p">(</span><span class="o">-</span><span class="n">ox</span><span class="p">):</span><span class="n">non</span><span class="p">(</span><span class="o">-</span><span class="n">ox</span><span class="p">),</span> <span class="n">mom</span><span class="p">(</span><span class="o">-</span><span class="n">oy</span><span class="p">):</span><span class="n">non</span><span class="p">(</span><span class="o">-</span><span class="n">oy</span><span class="p">),</span> <span class="o">...</span><span class="p">]</span>
+            <span class="n">inputs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">shift_label</span>
+
+            <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;translation&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">ox</span><span class="p">,</span> <span class="n">oy</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;translation&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">helper</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">transformation</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="random_rotation"><a class="viewcode-back" href="../../../../dpp.twodim.segmentation.html#dpp.twodim.segmentation.random_rotation">[docs]</a><span class="k">def</span> <span class="nf">random_rotation</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">probability</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">upper_bound</span><span class="o">=</span><span class="mi">180</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Rotates a random selection of the input by a random amount. The rotation varies between datapoints, but is the same for</span>
+<span class="sd">    all inputs of a single datapoint.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    source : iterable</span>
+<span class="sd">        An iterable over a number of datapoints where each datapoint is a tuple of a list of inputs and a parameter dictionary.</span>
+<span class="sd">    probability: float</span>
+<span class="sd">        The probability of rotating the input. If it is below 1, some inputs will be passed through unchanged.</span>
+<span class="sd">    upper_bound: number</span>
+<span class="sd">        The maximum rotation in degrees.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gen : generator</span>
+<span class="sd">        A generator that yields each transformed datapoint as a tuple of a list of inputs and a parameter dictionary.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">probability</span><span class="p">,</span> <span class="n">numbers</span><span class="o">.</span><span class="n">Number</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Probability must be a number! Received: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">probability</span><span class="p">)))</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">upper_bound</span><span class="p">,</span> <span class="n">numbers</span><span class="o">.</span><span class="n">Number</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Upper bound must be a number! Received: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">upper_bound</span><span class="p">)))</span>
+
+    <span class="k">if</span> <span class="n">upper_bound</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Upper bound must be greater than 0! Received: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">upper_bound</span><span class="p">))</span>
+    <span class="k">elif</span> <span class="n">upper_bound</span> <span class="o">&gt;</span> <span class="mi">180</span><span class="p">:</span>
+        <span class="n">upper_bound</span> <span class="o">=</span> <span class="mi">180</span>
+
+    <span class="k">def</span> <span class="nf">transformation</span><span class="p">(</span><span class="n">input_tuple</span><span class="p">):</span>
+        <span class="n">inputs</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">input_tuple</span>
+
+        <span class="k">if</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">probability</span><span class="p">):</span>
+
+            <span class="n">angle</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="o">-</span><span class="n">upper_bound</span><span class="p">,</span> <span class="n">upper_bound</span><span class="p">)</span>
+            <span class="n">angle</span> <span class="o">=</span> <span class="p">(</span><span class="mi">360</span> <span class="o">+</span> <span class="n">angle</span><span class="p">)</span> <span class="o">%</span> <span class="mi">360</span>
+
+            <span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">ndimage</span><span class="o">.</span><span class="n">interpolation</span><span class="o">.</span><span class="n">rotate</span><span class="p">(</span><span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">angle</span><span class="p">,</span> <span class="n">reshape</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">cval</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">prefilter</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># order = 1 =&gt; biliniear interpolation</span>
+            <span class="n">inputs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">ndimage</span><span class="o">.</span><span class="n">interpolation</span><span class="o">.</span><span class="n">rotate</span><span class="p">(</span><span class="n">inputs</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">angle</span><span class="p">,</span> <span class="n">reshape</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">cval</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">inputs</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">prefilter</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># order = 0 =&gt; nearest neighbour</span>
+
+            <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;rotation&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">angle</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;rotation&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">helper</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">transformation</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="mask_img_background"><a class="viewcode-back" href="../../../../dpp.twodim.segmentation.html#dpp.twodim.segmentation.mask_img_background">[docs]</a><span class="k">def</span> <span class="nf">mask_img_background</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">background_label</span><span class="p">,</span> <span class="n">pixel_value</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Masks the background, all pixels that have the background_label in the ground truth, with the given pixel value or</span>
+<span class="sd">    the minimum pixel value if None is given.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    source : iterable</span>
+<span class="sd">        An iterable over a number of datapoints where each datapoint is a tuple of a list of inputs and a parameter dictionary.</span>
+<span class="sd">    background_label: int</span>
+<span class="sd">        The label that defines the background.</span>
+<span class="sd">    pixel_value: float</span>
+<span class="sd">        The value that each background pixel is set to. If None, the minimum value will be used.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gen : generator</span>
+<span class="sd">        A generator that yields each transformed datapoint as a tuple of a list of inputs and a parameter dictionary.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">background_label</span><span class="p">,</span> <span class="n">numbers</span><span class="o">.</span><span class="n">Number</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Background label must be a number! Received: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">background_label</span><span class="p">)))</span>
+
+    <span class="k">if</span> <span class="n">pixel_value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pixel_value</span><span class="p">,</span> <span class="n">numbers</span><span class="o">.</span><span class="n">Number</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Pixel value must be a number! Received: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">pixel_value</span><span class="p">)))</span>
+
+    <span class="k">def</span> <span class="nf">transformation</span><span class="p">(</span><span class="n">input_tuple</span><span class="p">):</span>
+        <span class="n">inputs</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">input_tuple</span>
+
+        <span class="n">fill_value</span> <span class="o">=</span> <span class="n">pixel_value</span> <span class="k">if</span> <span class="n">pixel_value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">inputs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">background_label</span><span class="p">]</span> <span class="o">=</span> <span class="n">fill_value</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">helper</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">transformation</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="robust_img_scaling"><a class="viewcode-back" href="../../../../dpp.twodim.segmentation.html#dpp.twodim.segmentation.robust_img_scaling">[docs]</a><span class="k">def</span> <span class="nf">robust_img_scaling</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">ignore_values</span><span class="o">=</span><span class="p">[],</span> <span class="n">initialization_generator</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">initialize</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Applies scaling to the image pixel values, that is robust to outliers. The scaler centers the input values on the median, and</span>
+<span class="sd">    scales the values according to the interquantile range (IQR), the range between the 1st and 3rd quartile (25th and 75th quantile).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    source : iterable</span>
+<span class="sd">        An iterable over a number of datapoints where each datapoint is a tuple of a list of inputs and a parameter dictionary.</span>
+<span class="sd">    ignore_values: list of int</span>
+<span class="sd">        A list of values that should be ignored when computing the median and IQR.</span>
+<span class="sd">    initialization_generator: iterable</span>
+<span class="sd">        An iterable that supplies the datapoints for initialization. If None and initialize is True, the initialization generator</span>
+<span class="sd">        of the pipeline is used, if possible.</span>
+<span class="sd">    initialize: bool</span>
+<span class="sd">        If True, the median and scaling values will be pre-computed. Values will be saved together with the file name, so the</span>
+<span class="sd">        file names in the output of the initialization generator should be unique.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gen : generator</span>
+<span class="sd">        A generator that yields each transformed datapoint as a tuple of a list of inputs and a parameter dictionary.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Conditional import</span>
+    <span class="kn">import</span> <span class="nn">sklearn.preprocessing</span> <span class="k">as</span> <span class="nn">skpre</span>
+
+    <span class="n">scaler</span> <span class="o">=</span> <span class="n">skpre</span><span class="o">.</span><span class="n">RobustScaler</span><span class="p">(</span><span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">initialize</span><span class="p">:</span>
+
+        <span class="n">dictionary</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">def</span> <span class="nf">init_func</span><span class="p">(</span><span class="n">datapoint</span><span class="p">):</span>
+            <span class="n">inputs</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">datapoint</span>
+
+            <span class="n">file_name</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;file_names&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">volume</span> <span class="o">=</span> <span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">ignore_values</span><span class="p">:</span>
+                <span class="n">volume</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">masked_values</span><span class="p">(</span><span class="n">volume</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">volume</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">compressed</span><span class="p">(</span><span class="n">volume</span><span class="p">)</span>
+            <span class="n">volume</span> <span class="o">=</span> <span class="n">volume</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">scaler</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">volume</span><span class="p">)</span>
+            <span class="n">dictionary</span><span class="p">[</span><span class="n">file_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">scaler</span><span class="o">.</span><span class="n">center_</span><span class="p">,</span> <span class="n">scaler</span><span class="o">.</span><span class="n">scale_</span><span class="p">)</span>
+
+        <span class="n">dictionary</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">helper</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="s2">&quot;dpp/twodim/segmentation/robust_img_scaling&quot;</span><span class="p">,</span> <span class="n">init_func</span><span class="p">,</span> <span class="n">dictionary</span><span class="p">,</span> <span class="n">initialization_generator</span><span class="o">=</span><span class="n">initialization_generator</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">dictionary</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+
+            <span class="k">def</span> <span class="nf">transformation</span><span class="p">(</span><span class="n">input_tuple</span><span class="p">):</span>
+                <span class="n">inputs</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">input_tuple</span>
+
+                <span class="n">file_name</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;file_names&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">image</span> <span class="o">=</span> <span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+                <span class="c1"># flatten</span>
+                <span class="n">old_shape</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span>
+                <span class="n">image</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+                <span class="c1"># scale</span>
+                <span class="n">scaler_params</span> <span class="o">=</span> <span class="n">dictionary</span><span class="p">[</span><span class="n">file_name</span><span class="p">]</span>
+                <span class="n">scaler</span><span class="o">.</span><span class="n">center_</span> <span class="o">=</span> <span class="n">scaler_params</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">scaler</span><span class="o">.</span><span class="n">scale_</span> <span class="o">=</span> <span class="n">scaler_params</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">image</span> <span class="o">=</span> <span class="n">scaler</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+
+                <span class="c1"># reshape</span>
+                <span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">old_shape</span><span class="p">)</span>
+
+                <span class="k">return</span> <span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">helper</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">transformation</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">transformation</span><span class="p">(</span><span class="n">input_tuple</span><span class="p">):</span>
+        <span class="n">inputs</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">input_tuple</span>
+
+        <span class="n">image</span> <span class="o">=</span> <span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># flatten</span>
+        <span class="n">old_shape</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">image</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ignore_values</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">img_fit</span> <span class="o">=</span> <span class="n">image</span>
+            <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">ignore_values</span><span class="p">:</span>
+                <span class="n">img_fit</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">masked_values</span><span class="p">(</span><span class="n">img_fit</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">img_fit</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">compressed</span><span class="p">(</span><span class="n">img_fit</span><span class="p">)</span>
+            <span class="n">img_fit</span> <span class="o">=</span> <span class="n">img_fit</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">scaler</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">img_fit</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">scaler</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+
+        <span class="c1"># scale</span>
+        <span class="n">image</span> <span class="o">=</span> <span class="n">scaler</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+
+        <span class="c1"># reshape</span>
+        <span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">old_shape</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">helper</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">transformation</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="rescale_intensitiy"><a class="viewcode-back" href="../../../../dpp.twodim.segmentation.html#dpp.twodim.segmentation.rescale_intensitiy">[docs]</a><span class="k">def</span> <span class="nf">rescale_intensitiy</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">new_min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">new_max</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">global_min</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">global_max</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Scales all image values, so that they lie in between new_min and new_max.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    source : iterable</span>
+<span class="sd">        An iterable over a number of datapoints where each datapoint is a tuple of a list of inputs and a parameter dictionary.</span>
+<span class="sd">    new_min: float</span>
+<span class="sd">        The new minimum pixel value</span>
+<span class="sd">    new_max: float</span>
+<span class="sd">        The new maximum pixel value.</span>
+<span class="sd">    global_min: float or None</span>
+<span class="sd">        If None, the minimum pixel value of the input will be used. Else, the value of global_min will be used as the old minimum.</span>
+<span class="sd">    global_max: float or None</span>
+<span class="sd">        If None, the maximum pixel value of the input will be used. Else, the value of global_min will be used as the old maximum.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gen : generator</span>
+<span class="sd">        A generator that yields each transformed datapoint as a tuple of a list of inputs and a parameter dictionary.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">new_min</span><span class="p">,</span> <span class="n">numbers</span><span class="o">.</span><span class="n">Number</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;New minimum must be a number! Received: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">new_min</span><span class="p">)))</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">new_max</span><span class="p">,</span> <span class="n">numbers</span><span class="o">.</span><span class="n">Number</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;New maximum must be a number! Received: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">new_max</span><span class="p">)))</span>
+
+    <span class="k">if</span> <span class="n">global_min</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">global_min</span><span class="p">,</span> <span class="n">numbers</span><span class="o">.</span><span class="n">Number</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Global minimum must be a number! Received: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">global_min</span><span class="p">)))</span>
+
+    <span class="k">if</span> <span class="n">global_max</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">global_max</span><span class="p">,</span> <span class="n">numbers</span><span class="o">.</span><span class="n">Number</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Global maximum must be a number! Received: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">global_max</span><span class="p">)))</span>
+
+    <span class="k">if</span> <span class="n">new_min</span> <span class="o">&gt;</span> <span class="n">new_max</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;New minimum must be smaller than new maximum! Received: </span><span class="si">{}</span><span class="s2"> and </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">new_min</span><span class="p">,</span> <span class="n">new_max</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">global_min</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">global_max</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">global_min</span> <span class="o">&gt;=</span> <span class="n">global_max</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Global minimum must be smaller than global maximum! Received: </span><span class="si">{}</span><span class="s2"> and </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">global_min</span><span class="p">,</span> <span class="n">global_max</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">transformation</span><span class="p">(</span><span class="n">input_tuple</span><span class="p">):</span>
+        <span class="n">inputs</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">input_tuple</span>
+
+        <span class="n">image</span> <span class="o">=</span> <span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">global_min</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">old_min</span> <span class="o">=</span> <span class="n">global_min</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">old_min</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">global_max</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">old_max</span> <span class="o">=</span> <span class="n">global_max</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">old_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+
+        <span class="n">image</span> <span class="o">-=</span> <span class="n">old_min</span>  <span class="c1"># minimum is now zero</span>
+        <span class="k">if</span> <span class="n">old_max</span> <span class="o">!=</span> <span class="n">old_min</span><span class="p">:</span>  <span class="c1"># avoid division by zero</span>
+            <span class="n">image</span> <span class="o">*=</span> <span class="p">(</span><span class="n">new_max</span> <span class="o">-</span> <span class="n">new_min</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">old_max</span> <span class="o">-</span> <span class="n">old_min</span><span class="p">)</span>  <span class="c1"># maximum is now (new_max - new_min), minimum is still zero</span>
+        <span class="n">image</span> <span class="o">+=</span> <span class="n">new_min</span>
+
+        <span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">image</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">helper</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">transformation</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="pad"><a class="viewcode-back" href="../../../../dpp.twodim.segmentation.html#dpp.twodim.segmentation.pad">[docs]</a><span class="k">def</span> <span class="nf">pad</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;reflect&#39;</span><span class="p">,</span> <span class="n">image_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">default_pixel</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">default_label</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Pads the input with a padding of the given width and according to the given mode.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    source : iterable</span>
+<span class="sd">        An iterable over a number of datapoints where each datapoint is a tuple of a list of inputs and a parameter dictionary.</span>
+<span class="sd">    width: int</span>
+<span class="sd">        The width of the padding.</span>
+<span class="sd">    mode: str</span>
+<span class="sd">        One of the modes specified for numpy.pad.</span>
+<span class="sd">    image_only: bool</span>
+<span class="sd">        If True, only the image will be padded. Else all inputs will be padded.</span>
+<span class="sd">    default_pixel: number or None</span>
+<span class="sd">        If mode is &#39;constant&#39;, this value will be used to pad the image. If None, the minimum value will be used.</span>
+<span class="sd">    default_label: number or None</span>
+<span class="sd">        If mode is &#39;constant&#39; and image_only is False, this value will be used to pad the ground truth. If None, the minimum</span>
+<span class="sd">        value will be used.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gen : generator</span>
+<span class="sd">        A generator that yields each transformed datapoint as a tuple of a list of inputs and a parameter dictionary.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">default_pixel</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">default_pixel</span><span class="p">,</span> <span class="n">numbers</span><span class="o">.</span><span class="n">Number</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Default pixel must be a number! Received: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">default_pixel</span><span class="p">)))</span>
+
+    <span class="k">if</span> <span class="n">default_label</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">default_label</span><span class="p">,</span> <span class="n">numbers</span><span class="o">.</span><span class="n">Number</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Default label must be a number! Received: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">default_label</span><span class="p">)))</span>
+
+    <span class="n">_constant</span> <span class="o">=</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;constant&#39;</span>
+
+    <span class="k">if</span> <span class="n">image_only</span><span class="p">:</span>
+
+        <span class="k">def</span> <span class="nf">transformation</span><span class="p">(</span><span class="n">input_tuple</span><span class="p">):</span>
+            <span class="n">inputs</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">input_tuple</span>
+
+            <span class="k">if</span> <span class="n">_constant</span><span class="p">:</span>
+                <span class="n">fill_value</span> <span class="o">=</span> <span class="n">default_pixel</span> <span class="k">if</span> <span class="n">default_pixel</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">width</span><span class="p">,</span> <span class="s1">&#39;constant&#39;</span><span class="p">,</span> <span class="n">constant_values</span><span class="o">=</span><span class="n">fill_value</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">width</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">helper</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">transformation</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+
+        <span class="k">def</span> <span class="nf">transformation</span><span class="p">(</span><span class="n">input_tuple</span><span class="p">):</span>
+            <span class="n">inputs</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">input_tuple</span>
+
+            <span class="k">if</span> <span class="n">_constant</span><span class="p">:</span>
+                <span class="n">fill_value</span> <span class="o">=</span> <span class="n">default_pixel</span> <span class="k">if</span> <span class="n">default_pixel</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">width</span><span class="p">,</span> <span class="s1">&#39;constant&#39;</span><span class="p">,</span> <span class="n">fill_value</span><span class="p">)</span>
+
+                <span class="n">fill_value</span> <span class="o">=</span> <span class="n">default_label</span> <span class="k">if</span> <span class="n">default_label</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">inputs</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                <span class="n">inputs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">inputs</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">width</span><span class="p">,</span> <span class="s1">&#39;constant&#39;</span><span class="p">,</span> <span class="n">fill_value</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">width</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span>
+                <span class="n">inputs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">inputs</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">width</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">helper</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">transformation</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="reduce_to_single_label_slice"><a class="viewcode-back" href="../../../../dpp.twodim.segmentation.html#dpp.twodim.segmentation.reduce_to_single_label_slice">[docs]</a><span class="k">def</span> <span class="nf">reduce_to_single_label_slice</span><span class="p">(</span><span class="n">source</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extracts the middle ground truth slice, if the input has a depth of more than 1 (for segmentation in 2.5 D). The depth</span>
+<span class="sd">    is defined as the size of the last dimension.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    source : iterable</span>
+<span class="sd">        An iterable over a number of datapoints where each datapoint is a tuple of a list of inputs and a parameter dictionary.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gen : generator</span>
+<span class="sd">        A generator that yields each transformed datapoint as a tuple of a list of inputs and a parameter dictionary.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">reduction</span><span class="p">(</span><span class="n">input_tuple</span><span class="p">):</span>
+        <span class="n">inputs</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">input_tuple</span>
+
+        <span class="n">labels</span> <span class="o">=</span> <span class="n">inputs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">labels</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="p">(</span><span class="n">labels</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+            <span class="n">labels</span> <span class="o">=</span> <span class="n">labels</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">index</span><span class="p">]</span>
+
+        <span class="n">inputs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">labels</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">helper</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">reduction</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="fuse_labels_greater_than"><a class="viewcode-back" href="../../../../dpp.twodim.segmentation.html#dpp.twodim.segmentation.fuse_labels_greater_than">[docs]</a><span class="k">def</span> <span class="nf">fuse_labels_greater_than</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Fuses all labels in the ground truth such that all label values greater than the given label are set to 1 and all label values</span>
+<span class="sd">    smaller or equal to the given label are set to 0.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    source : iterable</span>
+<span class="sd">        An iterable over a number of datapoints where each datapoint is a tuple of a list of inputs and a parameter dictionary.</span>
+<span class="sd">    label: int</span>
+<span class="sd">        The cut off value.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gen : generator</span>
+<span class="sd">        A generator that yields each transformed datapoint as a tuple of a list of inputs and a parameter dictionary.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">numbers</span><span class="o">.</span><span class="n">Number</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Label must be a number! Received: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">label</span><span class="p">)))</span>
+
+    <span class="k">def</span> <span class="nf">transformation</span><span class="p">(</span><span class="n">input_tuple</span><span class="p">):</span>
+        <span class="n">inputs</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">input_tuple</span>
+
+        <span class="n">inputs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">inputs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">label</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">inputs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">helper</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">transformation</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="fuse_labels_other_than"><a class="viewcode-back" href="../../../../dpp.twodim.segmentation.html#dpp.twodim.segmentation.fuse_labels_other_than">[docs]</a><span class="k">def</span> <span class="nf">fuse_labels_other_than</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">label_number</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Fuses all labels in the ground truth such that all label values that are equal to the given label_number are set to 1 and</span>
+<span class="sd">    all label values other than the given label are set to 0.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    source : iterable</span>
+<span class="sd">        An iterable over a number of datapoints where each datapoint is a tuple of a list of inputs and a parameter dictionary.</span>
+<span class="sd">    label_number: int</span>
+<span class="sd">        The label of interest.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gen : generator</span>
+<span class="sd">        A generator that yields each transformed datapoint as a tuple of a list of inputs and a parameter dictionary.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">label_number</span><span class="p">,</span> <span class="n">numbers</span><span class="o">.</span><span class="n">Number</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Label Number must be a number! Received: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">label_number</span><span class="p">)))</span>
+
+    <span class="k">def</span> <span class="nf">transformation</span><span class="p">(</span><span class="n">input_tuple</span><span class="p">):</span>
+        <span class="n">inputs</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">input_tuple</span>
+
+        <span class="n">inputs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">inputs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">label_number</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">inputs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">helper</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">transformation</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">__resize</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">desired_size</span><span class="p">):</span>
+
+    <span class="n">zooms</span> <span class="o">=</span> <span class="n">desired_size</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="mi">2</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+
+    <span class="n">image_zooms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">zooms</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">zooms</span><span class="o">.</span><span class="n">dtype</span><span class="p">))</span>
+    <span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">ndimage</span><span class="o">.</span><span class="n">zoom</span><span class="p">(</span><span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">image_zooms</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># order = 1 =&gt; biliniear interpolation</span>
+
+    <span class="n">label_zooms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">zooms</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">inputs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">zooms</span><span class="o">.</span><span class="n">dtype</span><span class="p">))</span>
+    <span class="n">inputs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">ndimage</span><span class="o">.</span><span class="n">zoom</span><span class="p">(</span><span class="n">inputs</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">label_zooms</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># order = 0 =&gt; nearest neighbour</span>
+
+    <span class="k">return</span> <span class="n">inputs</span>
+
+
+<div class="viewcode-block" id="resize"><a class="viewcode-back" href="../../../../dpp.twodim.segmentation.html#dpp.twodim.segmentation.resize">[docs]</a><span class="k">def</span> <span class="nf">resize</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">desired_size</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Resizes the input to the desired_size.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    source : iterable</span>
+<span class="sd">        An iterable over a number of datapoints where each datapoint is a tuple of a list of inputs and a parameter dictionary.</span>
+<span class="sd">    desired_size: array or list of length 2</span>
+<span class="sd">        The height and width of the output.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gen : generator</span>
+<span class="sd">        A generator that yields each transformed datapoint as a tuple of a list of inputs and a parameter dictionary.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">desired_size</span><span class="p">,</span> <span class="n">collections</span><span class="o">.</span><span class="n">Sequence</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">desired_size</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+        <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Desired size must be a sequence or array! Received: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">desired_size</span><span class="p">)))</span>
+
+    <span class="n">desired_size</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">desired_size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">transformation</span><span class="p">(</span><span class="n">input_tuple</span><span class="p">):</span>
+        <span class="n">inputs</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">input_tuple</span>
+
+        <span class="n">inputs</span> <span class="o">=</span> <span class="n">__resize</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">desired_size</span><span class="p">)</span>
+        <span class="c1"># parameters[&quot;spacing&quot;] = tuple(np.array(parameters[&quot;spacing&quot;]) * (parameters[&quot;size&quot;] / desired_size.astype(np.float)))</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;size&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">desired_size</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">helper</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">transformation</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">__random_resize</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">desired_size</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="n">default_pixel</span><span class="p">,</span> <span class="n">default_label</span><span class="p">):</span>
+
+    <span class="k">if</span> <span class="n">factor</span> <span class="o">&gt;</span> <span class="mf">1.</span><span class="p">:</span>
+
+        <span class="n">zooms</span> <span class="o">=</span> <span class="p">(</span><span class="n">desired_size</span> <span class="o">*</span> <span class="n">factor</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="mi">2</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+        <span class="n">scaled_size</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rint</span><span class="p">(</span><span class="n">desired_size</span> <span class="o">*</span> <span class="n">factor</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int</span><span class="p">)</span>
+
+        <span class="c1"># If the resized image would be larger than the desired size</span>
+        <span class="c1"># use a center crop from the resized image</span>
+        <span class="n">x_start</span> <span class="o">=</span> <span class="p">(</span><span class="n">scaled_size</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">desired_size</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span>
+        <span class="n">y_start</span> <span class="o">=</span> <span class="p">(</span><span class="n">scaled_size</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">desired_size</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span>
+        <span class="n">x_end</span> <span class="o">=</span> <span class="n">x_start</span> <span class="o">+</span> <span class="n">desired_size</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">y_end</span> <span class="o">=</span> <span class="n">y_start</span> <span class="o">+</span> <span class="n">desired_size</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="n">new_size</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">desired_size</span><span class="p">)</span>
+        <span class="n">new_size</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">:])</span>
+        <span class="n">image_zooms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">zooms</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">zooms</span><span class="o">.</span><span class="n">dtype</span><span class="p">))</span>
+
+        <span class="n">output</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">new_size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="n">image</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">ndimage</span><span class="o">.</span><span class="n">zoom</span><span class="p">(</span><span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">image_zooms</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># order = 1 =&gt; biliniear interpolation</span>
+        <span class="n">output</span><span class="p">[:,</span> <span class="p">:,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">image</span><span class="p">[</span><span class="n">x_start</span><span class="p">:</span><span class="n">x_end</span><span class="p">,</span> <span class="n">y_start</span><span class="p">:</span><span class="n">y_end</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+        <span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">output</span>
+
+        <span class="n">new_size</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">desired_size</span><span class="p">)</span>
+        <span class="n">new_size</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">inputs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">:])</span>
+        <span class="n">label_zooms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">zooms</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">inputs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">zooms</span><span class="o">.</span><span class="n">dtype</span><span class="p">))</span>
+
+        <span class="n">output</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">new_size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">inputs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">ndimage</span><span class="o">.</span><span class="n">zoom</span><span class="p">(</span><span class="n">inputs</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">label_zooms</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># order = 0 =&gt; nearest neighbour</span>
+        <span class="n">output</span><span class="p">[:,</span> <span class="p">:,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">labels</span><span class="p">[</span><span class="n">x_start</span><span class="p">:</span><span class="n">x_end</span><span class="p">,</span> <span class="n">y_start</span><span class="p">:</span><span class="n">y_end</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+        <span class="n">inputs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">output</span>
+
+    <span class="k">elif</span> <span class="n">factor</span> <span class="o">&lt;</span> <span class="mf">1.</span><span class="p">:</span>
+
+        <span class="n">zooms</span> <span class="o">=</span> <span class="p">(</span><span class="n">desired_size</span> <span class="o">*</span> <span class="n">factor</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="mi">2</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+        <span class="n">scaled_size</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rint</span><span class="p">(</span><span class="n">desired_size</span> <span class="o">*</span> <span class="n">factor</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int</span><span class="p">)</span>
+
+        <span class="c1"># If the resized image would be smaller than the desired size</span>
+        <span class="c1"># position the resized image in the center of the output image</span>
+        <span class="n">x_start</span> <span class="o">=</span> <span class="p">(</span><span class="n">desired_size</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">scaled_size</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span>
+        <span class="n">y_start</span> <span class="o">=</span> <span class="p">(</span><span class="n">desired_size</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">scaled_size</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span>
+        <span class="n">x_end</span> <span class="o">=</span> <span class="n">x_start</span> <span class="o">+</span> <span class="n">scaled_size</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">y_end</span> <span class="o">=</span> <span class="n">y_start</span> <span class="o">+</span> <span class="n">scaled_size</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="n">new_size</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">desired_size</span><span class="p">)</span>
+        <span class="n">new_size</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">:])</span>
+        <span class="n">image_zooms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">zooms</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">zooms</span><span class="o">.</span><span class="n">dtype</span><span class="p">))</span>
+
+        <span class="n">fill_value</span> <span class="o">=</span> <span class="n">default_pixel</span> <span class="k">if</span> <span class="n">default_pixel</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">new_size</span><span class="p">,</span> <span class="n">fill_value</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="n">image</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">ndimage</span><span class="o">.</span><span class="n">zoom</span><span class="p">(</span><span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">image_zooms</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># order = 1 =&gt; biliniear interpolation</span>
+        <span class="n">output</span><span class="p">[</span><span class="n">x_start</span><span class="p">:</span><span class="n">x_end</span><span class="p">,</span> <span class="n">y_start</span><span class="p">:</span><span class="n">y_end</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">image</span><span class="p">[:,</span> <span class="p">:,</span> <span class="o">...</span><span class="p">]</span>
+        <span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">output</span>
+
+        <span class="n">new_size</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">desired_size</span><span class="p">)</span>
+        <span class="n">new_size</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">inputs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">:])</span>
+        <span class="n">label_zooms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">zooms</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">inputs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">zooms</span><span class="o">.</span><span class="n">dtype</span><span class="p">))</span>
+
+        <span class="n">fill_value</span> <span class="o">=</span> <span class="n">default_label</span> <span class="k">if</span> <span class="n">default_label</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">inputs</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">new_size</span><span class="p">,</span> <span class="n">fill_value</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">inputs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">ndimage</span><span class="o">.</span><span class="n">zoom</span><span class="p">(</span><span class="n">inputs</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">label_zooms</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># order = 0 =&gt; nearest neighbour</span>
+        <span class="n">output</span><span class="p">[</span><span class="n">x_start</span><span class="p">:</span><span class="n">x_end</span><span class="p">,</span> <span class="n">y_start</span><span class="p">:</span><span class="n">y_end</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">labels</span><span class="p">[:,</span> <span class="p">:,</span> <span class="o">...</span><span class="p">]</span>
+        <span class="n">inputs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">output</span>
+
+    <span class="k">else</span><span class="p">:</span>
+
+        <span class="n">inputs</span> <span class="o">=</span> <span class="n">__resize</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">desired_size</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">inputs</span>
+
+
+<div class="viewcode-block" id="random_resize"><a class="viewcode-back" href="../../../../dpp.twodim.segmentation.html#dpp.twodim.segmentation.random_resize">[docs]</a><span class="k">def</span> <span class="nf">random_resize</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">desired_size</span><span class="p">,</span> <span class="n">probability</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">lower_bound</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span> <span class="n">upper_bound</span><span class="o">=</span><span class="mf">1.1</span><span class="p">,</span> <span class="n">default_pixel</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">default_label</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Resizes a random selection of the input to the desired_size. The new size varies randomly within the given bounds. If the</span>
+<span class="sd">    resized image is larger than the desired size, a centered crop of the given size is returned. If the new size is smaller than</span>
+<span class="sd">    the desired size, it will be padded to the given size. The size before cropping or padding varies between datapoints, but is</span>
+<span class="sd">    the same for all inputs of a single datapoint.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    source : iterable</span>
+<span class="sd">        An iterable over a number of datapoints where each datapoint is a tuple of a list of inputs and a parameter dictionary.</span>
+<span class="sd">    desired_size: array or list of length 2</span>
+<span class="sd">        The height and width of the output.</span>
+<span class="sd">    probability: float</span>
+<span class="sd">        The probability of randomly resizing the input. If it is below 1, some inputs will simply be resized to the desired size.</span>
+<span class="sd">    lower_bound: float</span>
+<span class="sd">        The minimum relative size of the resized image before padding.</span>
+<span class="sd">    upper_bound: float</span>
+<span class="sd">        The maximum relative size of the resized image before cropping.</span>
+<span class="sd">    default_pixel: number or None</span>
+<span class="sd">        The fill value for the image input. If None, the minimum value will be used.</span>
+<span class="sd">    default_label: number or None</span>
+<span class="sd">        The fill value for the ground truth input. If None, the minimum value will be used.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gen : generator</span>
+<span class="sd">        A generator that yields each transformed datapoint as a tuple of a list of inputs and a parameter dictionary.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">desired_size</span><span class="p">,</span> <span class="n">collections</span><span class="o">.</span><span class="n">Sequence</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">desired_size</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+        <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Desired size must be a sequence or array! Received: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">desired_size</span><span class="p">)))</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">probability</span><span class="p">,</span> <span class="n">numbers</span><span class="o">.</span><span class="n">Number</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Probability must be a number! Received: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">probability</span><span class="p">)))</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lower_bound</span><span class="p">,</span> <span class="n">numbers</span><span class="o">.</span><span class="n">Number</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Lower bound must be a number! Received: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">lower_bound</span><span class="p">)))</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">upper_bound</span><span class="p">,</span> <span class="n">numbers</span><span class="o">.</span><span class="n">Number</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Upper bound must be a number! Received: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">upper_bound</span><span class="p">)))</span>
+
+    <span class="k">if</span> <span class="n">default_pixel</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">default_pixel</span><span class="p">,</span> <span class="n">numbers</span><span class="o">.</span><span class="n">Number</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Default pixel must be a number! Received: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">default_pixel</span><span class="p">)))</span>
+
+    <span class="k">if</span> <span class="n">default_label</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">default_label</span><span class="p">,</span> <span class="n">numbers</span><span class="o">.</span><span class="n">Number</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Default label must be a number! Received: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">default_label</span><span class="p">)))</span>
+
+    <span class="k">if</span> <span class="n">probability</span> <span class="o">&gt;</span> <span class="mf">1.0</span> <span class="ow">or</span> <span class="n">probability</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Probability must be between 0.0 and 1.0! Received: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">probability</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">lower_bound</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Lower bound must be greater than 0.0! Received: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lower_bound</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">upper_bound</span> <span class="o">&lt;=</span> <span class="n">lower_bound</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Upper bound must be greater than lower bound! Received: lower: </span><span class="si">{}</span><span class="s2">, and upper: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lower_bound</span><span class="p">,</span> <span class="n">upper_bound</span><span class="p">))</span>
+
+    <span class="n">desired_size</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">desired_size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">transformation</span><span class="p">(</span><span class="n">input_tuple</span><span class="p">):</span>
+        <span class="n">inputs</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">input_tuple</span>
+
+        <span class="k">if</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">probability</span><span class="p">):</span>
+
+            <span class="c1"># Zoom factor relative to desired size</span>
+            <span class="n">factor</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">()</span> <span class="o">*</span> <span class="p">(</span><span class="n">upper_bound</span> <span class="o">-</span> <span class="n">lower_bound</span><span class="p">)</span> <span class="o">+</span> <span class="n">lower_bound</span>
+            <span class="n">inputs</span> <span class="o">=</span> <span class="n">__random_resize</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">desired_size</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="n">default_pixel</span><span class="p">,</span> <span class="n">default_label</span><span class="p">)</span>
+            <span class="c1"># parameters[&quot;spacing&quot;] = tuple(np.array(parameters[&quot;spacing&quot;]) * (parameters[&quot;size&quot;] / scaled_size.astype(np.float)))</span>
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="n">inputs</span> <span class="o">=</span> <span class="n">__resize</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">desired_size</span><span class="p">)</span>
+            <span class="c1"># parameters[&quot;spacing&quot;] = tuple(np.array(parameters[&quot;spacing&quot;]) * (parameters[&quot;size&quot;] / desired_size.astype(np.float)))</span>
+
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;size&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">desired_size</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">helper</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">transformation</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="transpose"><a class="viewcode-back" href="../../../../dpp.twodim.segmentation.html#dpp.twodim.segmentation.transpose">[docs]</a><span class="k">def</span> <span class="nf">transpose</span><span class="p">(</span><span class="n">source</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the transpose of each input. The transpose is equal to the original input with the first to axes interchanged.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    source : iterable</span>
+<span class="sd">        An iterable over a number of datapoints where each datapoint is a tuple of a list of inputs and a parameter dictionary.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gen : generator</span>
+<span class="sd">        A generator that yields each transformed datapoint as a tuple of a list of inputs and a parameter dictionary.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">transformation</span><span class="p">(</span><span class="n">input_tuple</span><span class="p">):</span>
+        <span class="n">inputs</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">input_tuple</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">axes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">))</span>
+            <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">axes</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">inputs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">axes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">inputs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">))</span>
+            <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">inputs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">inputs</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">axes</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">inputs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">inputs</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;size&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">reversed</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;size&quot;</span><span class="p">]))</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">helper</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">transformation</span><span class="p">)</span></div>
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">def transpose(source, definition=None):</span>
+
+<span class="sd">    if definition is None:</span>
+
+<span class="sd">        def transformation(input_tuple):</span>
+<span class="sd">            inputs, parameters = input_tuple</span>
+
+<span class="sd">            inputs[0] = np.transpose(inputs[0])</span>
+<span class="sd">            inputs[1] = np.transpose(inputs[1])</span>
+
+<span class="sd">            parameters[&quot;size&quot;] = tuple(reversed(parameters[&quot;size&quot;]))</span>
+<span class="sd">            # parameters[&quot;spacing&quot;] = tuple(reversed(parameters[&quot;spacing&quot;]))</span>
+
+<span class="sd">            return (inputs, parameters)</span>
+
+<span class="sd">        return helper.apply(source, transformation)</span>
+
+<span class="sd">    else:</span>
+
+<span class="sd">        if not isinstance(definition, collections.Sequence) and not isinstance(definition, np.ndarray):</span>
+<span class="sd">            TypeError(&quot;Definition must be a sequence or array! Received: {}&quot;.format(type(definition)))</span>
+
+<span class="sd">        def transformation(input_tuple):</span>
+<span class="sd">            inputs, parameters = input_tuple</span>
+
+<span class="sd">            inputs[0] = np.transpose(inputs[0], definition)</span>
+<span class="sd">            inputs[1] = np.transpose(inputs[1], definition)</span>
+
+<span class="sd">            # switch the size and spacing parameters for the different</span>
+<span class="sd">            # dimensions according to the transpose definition</span>
+<span class="sd">            size = np.asarray(parameters[&quot;size&quot;])</span>
+<span class="sd">            # spacing = np.asarray(parameters[&quot;spacing&quot;])</span>
+
+<span class="sd">            parameters[&quot;size&quot;] = tuple(size[definition])</span>
+<span class="sd">            # parameters[&quot;spacing&quot;] = tuple(spacing[definition])</span>
+
+<span class="sd">            return (inputs, parameters)</span>
+
+<span class="sd">        return helper.apply(source, transformation)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="normalization"><a class="viewcode-back" href="../../../../dpp.twodim.segmentation.html#dpp.twodim.segmentation.normalization">[docs]</a><span class="k">def</span> <span class="nf">normalization</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">mean</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">standard_deviation</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Normalizes the image input, by subtracting  the mean and deviding by the standard deviation.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    source : iterable</span>
+<span class="sd">        An iterable over a number of datapoints where each datapoint is a tuple of a list of inputs and a parameter dictionary.</span>
+<span class="sd">    mean: number or None</span>
+<span class="sd">        The mean to be subtracted. If None, the mean of the input image will be used.</span>
+<span class="sd">    standard_deviation: number or None</span>
+<span class="sd">        The standard deviation by which to devide the image values after mean subtraction. If None the standard deviation of the</span>
+<span class="sd">        input image will be used.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gen : generator</span>
+<span class="sd">        A generator that yields each transformed datapoint as a tuple of a list of inputs and a parameter dictionary.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">mean</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mean</span><span class="p">,</span> <span class="n">numbers</span><span class="o">.</span><span class="n">Number</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Mean must be a number! Received: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">mean</span><span class="p">)))</span>
+
+    <span class="k">if</span> <span class="n">standard_deviation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">standard_deviation</span><span class="p">,</span> <span class="n">numbers</span><span class="o">.</span><span class="n">Number</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Standard deviation must be a number! Received: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">standard_deviation</span><span class="p">)))</span>
+
+    <span class="k">def</span> <span class="nf">transformation</span><span class="p">(</span><span class="n">input_tuple</span><span class="p">):</span>
+        <span class="n">inputs</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">input_tuple</span>
+
+        <span class="n">me</span> <span class="o">=</span> <span class="n">mean</span> <span class="k">if</span> <span class="n">mean</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">std</span> <span class="o">=</span> <span class="n">standard_deviation</span> <span class="k">if</span> <span class="n">standard_deviation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-=</span> <span class="n">me</span>
+        <span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/=</span> <span class="n">std</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">helper</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">transformation</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="histogram_matching"><a class="viewcode-back" href="../../../../dpp.twodim.segmentation.html#dpp.twodim.segmentation.histogram_matching">[docs]</a><span class="k">def</span> <span class="nf">histogram_matching</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">template_generator</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Adjust the pixel values of a grayscale image such that its histogram matches that of a target image</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    source : iterable</span>
+<span class="sd">        An iterable over a number of datapoints where each datapoint is a tuple of a list of inputs and a parameter dictionary.</span>
+<span class="sd">    templage_generator: iterable</span>
+<span class="sd">        Same type as source. Used to compute the template histogram which is used to transform the input. The dimensions of the</span>
+<span class="sd">        images returned by the template generator may differ from the dimensions of the images returned by source.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gen : generator</span>
+<span class="sd">        A generator that yields each transformed datapoint as a tuple of a list of inputs and a parameter dictionary.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">transformation</span><span class="p">(</span><span class="n">input_tuple</span><span class="p">):</span>
+        <span class="n">source_inputs</span><span class="p">,</span> <span class="n">source_parameters</span> <span class="o">=</span> <span class="n">input_tuple</span>
+
+        <span class="n">template_inputs</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">template_generator</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+
+        <span class="n">source_img</span> <span class="o">=</span> <span class="n">source_inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">template_img</span> <span class="o">=</span> <span class="n">template_inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">old_shape</span> <span class="o">=</span> <span class="n">source_img</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">source_img</span> <span class="o">=</span> <span class="n">source_img</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+        <span class="n">template_img</span> <span class="o">=</span> <span class="n">template_img</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+
+        <span class="c1"># get the set of unique pixel values and their corresponding indices and</span>
+        <span class="c1"># counts</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">s_counts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">source_img</span><span class="p">,</span> <span class="n">return_inverse</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                         <span class="n">return_counts</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">t_values</span><span class="p">,</span> <span class="n">t_counts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">template_img</span><span class="p">,</span> <span class="n">return_counts</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># take the cumulative sum of the counts and normalize by the number of</span>
+        <span class="c1"># pixels to get the empirical cumulative distribution functions for the</span>
+        <span class="c1"># source and template images (maps pixel value --&gt; quantile)</span>
+        <span class="n">s_quantiles</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">s_counts</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="n">s_quantiles</span> <span class="o">/=</span> <span class="n">s_quantiles</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">t_quantiles</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">t_counts</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="n">t_quantiles</span> <span class="o">/=</span> <span class="n">t_quantiles</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="c1"># interpolate linearly to find the pixel values in the template image</span>
+        <span class="c1"># that correspond most closely to the quantiles in the source image</span>
+        <span class="n">interpolated_s_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">s_quantiles</span><span class="p">,</span> <span class="n">t_quantiles</span><span class="p">,</span> <span class="n">t_values</span><span class="p">)</span>
+
+        <span class="n">source_inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">interpolated_s_values</span><span class="p">[</span><span class="n">indices</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">old_shape</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="n">source_inputs</span><span class="p">,</span> <span class="n">source_parameters</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">helper</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">transformation</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="crop_to_label"><a class="viewcode-back" href="../../../../dpp.twodim.segmentation.html#dpp.twodim.segmentation.crop_to_label">[docs]</a><span class="k">def</span> <span class="nf">crop_to_label</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">max_reduction</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">square_crop</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">default_pixel</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">default_label</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Crops the all inputs to the bounding box around the pixels with the given label.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    source : iterable</span>
+<span class="sd">        An iterable over a number of datapoints where each datapoint is a tuple of a list of inputs and a parameter dictionary.</span>
+<span class="sd">    label: int</span>
+<span class="sd">        The label to which to fit the inputs.</span>
+<span class="sd">    max_reduction: float</span>
+<span class="sd">        The maximum reduction. A maximum reduction of 10 means that the returned images are at least 1/10 of their original size.</span>
+<span class="sd">    square_crop: bool</span>
+<span class="sd">        If True, the shorter side of the bounding box will be symmetrically extended to create a square crop. If False, the crop</span>
+<span class="sd">        will be fitted exactly.</span>
+<span class="sd">    default_pixel: number or None</span>
+<span class="sd">        The fill value for the image input. If None, the minimum value will be used. Only required if square_crop is True.</span>
+<span class="sd">    default_label: number or None</span>
+<span class="sd">        The fill value for the ground truth input. If None, the minimum value will be used. Only required if square_crop is True.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gen : generator</span>
+<span class="sd">        A generator that yields each transformed datapoint as a tuple of a list of inputs and a parameter dictionary.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">max_reduction</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">max_reduction</span><span class="p">,</span> <span class="n">numbers</span><span class="o">.</span><span class="n">Number</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Maximum zoom must be a number! Received: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">max_reduction</span><span class="p">)))</span>
+
+    <span class="k">if</span> <span class="n">default_pixel</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">default_pixel</span><span class="p">,</span> <span class="n">numbers</span><span class="o">.</span><span class="n">Number</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Default pixel must be a number! Received: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">default_pixel</span><span class="p">)))</span>
+
+    <span class="k">if</span> <span class="n">default_label</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">default_label</span><span class="p">,</span> <span class="n">numbers</span><span class="o">.</span><span class="n">Number</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Default label must be a number! Received: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">default_label</span><span class="p">)))</span>
+
+    <span class="k">if</span> <span class="n">max_reduction</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Maximum reduction must be greater than 0! Received: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">max_reduction</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">transformation</span><span class="p">(</span><span class="n">input_tuple</span><span class="p">):</span>
+        <span class="n">inputs</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="n">input_tuple</span>
+
+        <span class="n">image</span> <span class="o">=</span> <span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="n">inputs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">label_map</span> <span class="o">=</span> <span class="n">labels</span> <span class="o">==</span> <span class="n">label</span>
+        <span class="n">image_shape</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">labels_shape</span> <span class="o">=</span> <span class="n">labels</span><span class="o">.</span><span class="n">shape</span>
+
+        <span class="c1"># Find the minimum side lengths of the crop</span>
+        <span class="n">x_min_length</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">image_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">max_reduction</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">y_min_length</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">image_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">max_reduction</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+
+        <span class="c1"># Find the first and last row and column of the crop</span>
+        <span class="c1"># First and last row and column which contain the label</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">label_map</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">label_map</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="n">x_where</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">x_where</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">x_where</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
+        <span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span> <span class="o">=</span> <span class="n">x_where</span><span class="p">[</span><span class="mi">0</span><span class="p">][[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+        <span class="n">xmax</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="n">y_where</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">y_where</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">y_where</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
+        <span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span> <span class="o">=</span> <span class="n">y_where</span><span class="p">[</span><span class="mi">0</span><span class="p">][[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+        <span class="n">ymax</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="c1"># Compute crop side lengths</span>
+        <span class="n">x_length</span> <span class="o">=</span> <span class="n">xmax</span> <span class="o">-</span> <span class="n">xmin</span>
+        <span class="n">y_length</span> <span class="o">=</span> <span class="n">ymax</span> <span class="o">-</span> <span class="n">ymin</span>
+
+        <span class="c1"># Extend crop side lengths to the minimum side lengths</span>
+        <span class="k">if</span> <span class="n">x_length</span> <span class="o">&lt;</span> <span class="n">x_min_length</span><span class="p">:</span>
+            <span class="n">xmin</span> <span class="o">-=</span> <span class="p">(</span><span class="n">x_min_length</span> <span class="o">-</span> <span class="n">x_length</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+            <span class="n">xmax</span> <span class="o">+=</span> <span class="p">(</span><span class="n">x_min_length</span> <span class="o">-</span> <span class="n">x_length</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+            <span class="n">x_length</span> <span class="o">=</span> <span class="n">xmax</span> <span class="o">-</span> <span class="n">xmin</span>
+
+        <span class="k">if</span> <span class="n">y_length</span> <span class="o">&lt;</span> <span class="n">y_min_length</span><span class="p">:</span>
+            <span class="n">ymin</span> <span class="o">-=</span> <span class="p">(</span><span class="n">y_min_length</span> <span class="o">-</span> <span class="n">y_length</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+            <span class="n">ymax</span> <span class="o">+=</span> <span class="p">(</span><span class="n">y_min_length</span> <span class="o">-</span> <span class="n">y_length</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+            <span class="n">y_length</span> <span class="o">=</span> <span class="n">ymax</span> <span class="o">-</span> <span class="n">ymin</span>
+
+        <span class="c1"># find and extend the shorter side for square crop</span>
+        <span class="k">if</span> <span class="n">square_crop</span> <span class="ow">and</span> <span class="n">x_length</span> <span class="o">&lt;</span> <span class="n">y_length</span><span class="p">:</span>
+
+            <span class="c1"># find new x_length. extend xmin and xmax for centered crop placement.</span>
+            <span class="n">xmin</span> <span class="o">-=</span> <span class="p">(</span><span class="n">y_length</span> <span class="o">-</span> <span class="n">x_length</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+            <span class="n">xmax</span> <span class="o">+=</span> <span class="p">(</span><span class="n">y_length</span> <span class="o">-</span> <span class="n">x_length</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+            <span class="n">x_length</span> <span class="o">=</span> <span class="n">y_length</span>
+
+        <span class="k">elif</span> <span class="n">square_crop</span> <span class="ow">and</span> <span class="n">y_length</span> <span class="o">&lt;</span> <span class="n">x_length</span><span class="p">:</span>
+
+            <span class="c1"># find new y_length. extend ymin and ymax for centered crop placement.</span>
+            <span class="n">ymin</span> <span class="o">-=</span> <span class="p">(</span><span class="n">x_length</span> <span class="o">-</span> <span class="n">y_length</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+            <span class="n">ymax</span> <span class="o">+=</span> <span class="p">(</span><span class="n">x_length</span> <span class="o">-</span> <span class="n">y_length</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+            <span class="n">y_length</span> <span class="o">=</span> <span class="n">x_length</span>
+
+        <span class="c1"># start and end on the new canvas. if the centered crop extends over</span>
+        <span class="c1"># the boarders of the old canvas those parts will be filled with</span>
+        <span class="c1"># the default value or, if no default is provided, with the minimum value.</span>
+        <span class="n">xstart</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">xend</span> <span class="o">=</span> <span class="n">x_length</span>
+
+        <span class="n">ystart</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">yend</span> <span class="o">=</span> <span class="n">y_length</span>
+
+        <span class="k">if</span> <span class="n">xmin</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">xstart</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">xmin</span><span class="p">)</span>
+            <span class="n">xmin</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">xmax</span> <span class="o">&gt;</span> <span class="n">image_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="n">xend</span> <span class="o">=</span> <span class="n">xend</span> <span class="o">-</span> <span class="p">(</span><span class="n">xmax</span> <span class="o">-</span> <span class="n">image_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">xmax</span> <span class="o">=</span> <span class="n">image_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">ymin</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">ystart</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">ymin</span><span class="p">)</span>
+            <span class="n">ymin</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">ymax</span> <span class="o">&gt;</span> <span class="n">image_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="n">yend</span> <span class="o">=</span> <span class="n">yend</span> <span class="o">-</span> <span class="p">(</span><span class="n">ymax</span> <span class="o">-</span> <span class="n">image_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">ymax</span> <span class="o">=</span> <span class="n">image_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="n">fill_value</span> <span class="o">=</span> <span class="n">default_pixel</span> <span class="k">if</span> <span class="n">default_pixel</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">image</span><span class="p">[</span><span class="n">xmin</span><span class="p">:</span><span class="n">xmax</span><span class="p">,</span> <span class="n">ymin</span><span class="p">:</span><span class="n">ymax</span><span class="p">])</span>
+        <span class="n">image_size</span> <span class="o">=</span> <span class="p">[</span><span class="n">x_length</span><span class="p">,</span> <span class="n">y_length</span><span class="p">]</span>
+        <span class="n">image_size</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">image_shape</span><span class="p">[</span><span class="mi">2</span><span class="p">:])</span>
+        <span class="n">image_crop</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">image_size</span><span class="p">,</span> <span class="n">fill_value</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+        <span class="n">image_crop</span><span class="p">[</span><span class="n">xstart</span><span class="p">:</span><span class="n">xend</span><span class="p">,</span> <span class="n">ystart</span><span class="p">:</span><span class="n">yend</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">image</span><span class="p">[</span><span class="n">xmin</span><span class="p">:</span><span class="n">xmax</span><span class="p">,</span> <span class="n">ymin</span><span class="p">:</span><span class="n">ymax</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+
+        <span class="n">fill_value</span> <span class="o">=</span> <span class="n">default_pixel</span> <span class="k">if</span> <span class="n">default_label</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">labels</span><span class="p">[</span><span class="n">xmin</span><span class="p">:</span><span class="n">xmax</span><span class="p">,</span> <span class="n">ymin</span><span class="p">:</span><span class="n">ymax</span><span class="p">])</span>
+        <span class="n">labels_size</span> <span class="o">=</span> <span class="p">[</span><span class="n">x_length</span><span class="p">,</span> <span class="n">y_length</span><span class="p">]</span>
+        <span class="n">labels_size</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">labels_shape</span><span class="p">[</span><span class="mi">2</span><span class="p">:])</span>
+        <span class="n">labels_crop</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">labels_size</span><span class="p">,</span> <span class="n">fill_value</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+        <span class="n">labels_crop</span><span class="p">[</span><span class="n">xstart</span><span class="p">:</span><span class="n">xend</span><span class="p">,</span> <span class="n">ystart</span><span class="p">:</span><span class="n">yend</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">labels</span><span class="p">[</span><span class="n">xmin</span><span class="p">:</span><span class="n">xmax</span><span class="p">,</span> <span class="n">ymin</span><span class="p">:</span><span class="n">ymax</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+
+        <span class="c1"># crop</span>
+        <span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">image_crop</span>
+        <span class="n">inputs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">labels_crop</span>
+
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;crop_indices&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">xstart</span><span class="p">,</span> <span class="n">xend</span><span class="p">,</span> <span class="n">ystart</span><span class="p">,</span> <span class="n">yend</span><span class="p">]</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;crop_canvas_size&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">x_length</span><span class="p">,</span> <span class="n">y_length</span><span class="p">]</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;image_indices&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">helper</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">transformation</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Felix Grün.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../../',
+            VERSION:'1.0.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

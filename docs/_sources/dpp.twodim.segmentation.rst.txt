@@ -1,0 +1,16 @@
+dpp\.twodim\.segmentation package
+=================================
+
+
+.. toctree::
+   :titlesonly:
+
+   dpp.twodim.segmentation.medical
+
+
+Module contents
+---------------
+
+.. automodule:: dpp.twodim.segmentation
+    :members:
+    :imported-members:

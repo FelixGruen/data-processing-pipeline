@@ -1,0 +1,736 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>dpp.twodim.segmentation package &mdash; Data Processing Pipeline 1.0.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="Data Processing Pipeline 1.0.0 documentation" href="index.html"/>
+        <link rel="up" title="dpp.twodim package" href="dpp.twodim.html"/>
+        <link rel="next" title="dpp.twodim.segmentation.medical package" href="dpp.twodim.segmentation.medical.html"/>
+        <link rel="prev" title="dpp.twodim package" href="dpp.twodim.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Data Processing Pipeline
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorials and Guides:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.user.html">Getting Started and User Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.developer.html">Developer Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">DPP Library Reference:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="dpp.html">Helper functions (dpp package)</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="dpp.reader.html">dpp.reader package</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="dpp.twodim.html">dpp.twodim package</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">dpp.twodim.segmentation package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dpp.twodim.segmentation.medical.html">dpp.twodim.segmentation.medical package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dpp.threedim.html">dpp.threedim package</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dpp.reader.html">Helper functions (dpp.reader package)</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Segmentation in 2D and 2.5D (dpp.twodim.segmentation package)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dpp.twodim.segmentation.medical.html">dpp.twodim.segmentation.medical package</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dpp.twodim.segmentation.medical.html">Segmentation in 2D and 2.5D (dpp.twodim.segmentation.medical package)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dpp.threedim.segmentation.html">Segmentation in 3D (dpp.threedim.segmentation package)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dpp.threedim.segmentation.medical.html">Segmentation in 3D (dpp.threedim.segmentation.medical package)</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Data Processing Pipeline</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="dpp.html">dpp package</a> &raquo;</li>
+        
+          <li><a href="dpp.twodim.html">dpp.twodim package</a> &raquo;</li>
+        
+      <li>dpp.twodim.segmentation package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/dpp.twodim.segmentation.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="dpp-twodim-segmentation-package">
+<h1>dpp.twodim.segmentation package<a class="headerlink" href="#dpp-twodim-segmentation-package" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dpp.twodim.segmentation.medical.html">dpp.twodim.segmentation.medical package</a></li>
+</ul>
+</div>
+<div class="section" id="module-dpp.twodim.segmentation">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-dpp.twodim.segmentation" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="dpp.twodim.segmentation.clip_img_values">
+<code class="descclassname">dpp.twodim.segmentation.</code><code class="descname">clip_img_values</code><span class="sig-paren">(</span><em>source</em>, <em>minimum</em>, <em>maximum</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpp/twodim/segmentation/segmentation.html#clip_img_values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpp.twodim.segmentation.clip_img_values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets all values of the image that are above the maximum value to the maximum and
+all values that are below the minimum value to the minimum.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>source</strong> (<em>iterable</em>) – An iterable over a number of datapoints where each datapoint is a tuple of a list of inputs and a parameter dictionary.</li>
+<li><strong>minimum</strong> (<em>number</em><em> or </em><em>None</em>) – The minimum value. Set None for no lower bound.</li>
+<li><strong>maximum</strong> (<em>number</em><em> or </em><em>None</em>) – The maximum value. Set None for no upper bound.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>gen</strong> – A generator that yields each transformed datapoint as a tuple of a list of inputs and a parameter dictionary.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">generator</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="dpp.twodim.segmentation.crop_to_label">
+<code class="descclassname">dpp.twodim.segmentation.</code><code class="descname">crop_to_label</code><span class="sig-paren">(</span><em>source</em>, <em>label</em>, <em>max_reduction=10</em>, <em>square_crop=True</em>, <em>default_pixel=None</em>, <em>default_label=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpp/twodim/segmentation/segmentation.html#crop_to_label"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpp.twodim.segmentation.crop_to_label" title="Permalink to this definition">¶</a></dt>
+<dd><p>Crops the all inputs to the bounding box around the pixels with the given label.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>source</strong> (<em>iterable</em>) – An iterable over a number of datapoints where each datapoint is a tuple of a list of inputs and a parameter dictionary.</li>
+<li><strong>label</strong> (<em>int</em>) – The label to which to fit the inputs.</li>
+<li><strong>max_reduction</strong> (<em>float</em>) – The maximum reduction. A maximum reduction of 10 means that the returned images are at least 1/10 of their original size.</li>
+<li><strong>square_crop</strong> (<em>bool</em>) – If True, the shorter side of the bounding box will be symmetrically extended to create a square crop. If False, the crop
+will be fitted exactly.</li>
+<li><strong>default_pixel</strong> (<em>number</em><em> or </em><em>None</em>) – The fill value for the image input. If None, the minimum value will be used. Only required if square_crop is True.</li>
+<li><strong>default_label</strong> (<em>number</em><em> or </em><em>None</em>) – The fill value for the ground truth input. If None, the minimum value will be used. Only required if square_crop is True.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>gen</strong> – A generator that yields each transformed datapoint as a tuple of a list of inputs and a parameter dictionary.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">generator</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="dpp.twodim.segmentation.fuse_labels_greater_than">
+<code class="descclassname">dpp.twodim.segmentation.</code><code class="descname">fuse_labels_greater_than</code><span class="sig-paren">(</span><em>source</em>, <em>label</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpp/twodim/segmentation/segmentation.html#fuse_labels_greater_than"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpp.twodim.segmentation.fuse_labels_greater_than" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fuses all labels in the ground truth such that all label values greater than the given label are set to 1 and all label values
+smaller or equal to the given label are set to 0.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>source</strong> (<em>iterable</em>) – An iterable over a number of datapoints where each datapoint is a tuple of a list of inputs and a parameter dictionary.</li>
+<li><strong>label</strong> (<em>int</em>) – The cut off value.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>gen</strong> – A generator that yields each transformed datapoint as a tuple of a list of inputs and a parameter dictionary.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">generator</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="dpp.twodim.segmentation.fuse_labels_other_than">
+<code class="descclassname">dpp.twodim.segmentation.</code><code class="descname">fuse_labels_other_than</code><span class="sig-paren">(</span><em>source</em>, <em>label_number</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpp/twodim/segmentation/segmentation.html#fuse_labels_other_than"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpp.twodim.segmentation.fuse_labels_other_than" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fuses all labels in the ground truth such that all label values that are equal to the given label_number are set to 1 and
+all label values other than the given label are set to 0.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>source</strong> (<em>iterable</em>) – An iterable over a number of datapoints where each datapoint is a tuple of a list of inputs and a parameter dictionary.</li>
+<li><strong>label_number</strong> (<em>int</em>) – The label of interest.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>gen</strong> – A generator that yields each transformed datapoint as a tuple of a list of inputs and a parameter dictionary.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">generator</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="dpp.twodim.segmentation.histogram_matching">
+<code class="descclassname">dpp.twodim.segmentation.</code><code class="descname">histogram_matching</code><span class="sig-paren">(</span><em>source</em>, <em>template_generator</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpp/twodim/segmentation/segmentation.html#histogram_matching"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpp.twodim.segmentation.histogram_matching" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adjust the pixel values of a grayscale image such that its histogram matches that of a target image</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>source</strong> (<em>iterable</em>) – An iterable over a number of datapoints where each datapoint is a tuple of a list of inputs and a parameter dictionary.</li>
+<li><strong>templage_generator</strong> (<em>iterable</em>) – Same type as source. Used to compute the template histogram which is used to transform the input. The dimensions of the
+images returned by the template generator may differ from the dimensions of the images returned by source.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>gen</strong> – A generator that yields each transformed datapoint as a tuple of a list of inputs and a parameter dictionary.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">generator</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="dpp.twodim.segmentation.img_clahe">
+<code class="descclassname">dpp.twodim.segmentation.</code><code class="descname">img_clahe</code><span class="sig-paren">(</span><em>source</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpp/twodim/segmentation/segmentation.html#img_clahe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpp.twodim.segmentation.img_clahe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Applies Contrast Limited Adaptive Histogram Equalization (CLAHE) to the image.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>source</strong> (<em>iterable</em>) – An iterable over a number of datapoints where each datapoint is a tuple of a list of inputs and a parameter dictionary.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>gen</strong> – A generator that yields each transformed datapoint as a tuple of a list of inputs and a parameter dictionary.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">generator</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="dpp.twodim.segmentation.mask_img_background">
+<code class="descclassname">dpp.twodim.segmentation.</code><code class="descname">mask_img_background</code><span class="sig-paren">(</span><em>source</em>, <em>background_label</em>, <em>pixel_value=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpp/twodim/segmentation/segmentation.html#mask_img_background"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpp.twodim.segmentation.mask_img_background" title="Permalink to this definition">¶</a></dt>
+<dd><p>Masks the background, all pixels that have the background_label in the ground truth, with the given pixel value or
+the minimum pixel value if None is given.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>source</strong> (<em>iterable</em>) – An iterable over a number of datapoints where each datapoint is a tuple of a list of inputs and a parameter dictionary.</li>
+<li><strong>background_label</strong> (<em>int</em>) – The label that defines the background.</li>
+<li><strong>pixel_value</strong> (<em>float</em>) – The value that each background pixel is set to. If None, the minimum value will be used.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>gen</strong> – A generator that yields each transformed datapoint as a tuple of a list of inputs and a parameter dictionary.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">generator</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="dpp.twodim.segmentation.normalization">
+<code class="descclassname">dpp.twodim.segmentation.</code><code class="descname">normalization</code><span class="sig-paren">(</span><em>source</em>, <em>mean=None</em>, <em>standard_deviation=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpp/twodim/segmentation/segmentation.html#normalization"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpp.twodim.segmentation.normalization" title="Permalink to this definition">¶</a></dt>
+<dd><p>Normalizes the image input, by subtracting  the mean and deviding by the standard deviation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>source</strong> (<em>iterable</em>) – An iterable over a number of datapoints where each datapoint is a tuple of a list of inputs and a parameter dictionary.</li>
+<li><strong>mean</strong> (<em>number</em><em> or </em><em>None</em>) – The mean to be subtracted. If None, the mean of the input image will be used.</li>
+<li><strong>standard_deviation</strong> (<em>number</em><em> or </em><em>None</em>) – The standard deviation by which to devide the image values after mean subtraction. If None the standard deviation of the
+input image will be used.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>gen</strong> – A generator that yields each transformed datapoint as a tuple of a list of inputs and a parameter dictionary.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">generator</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="dpp.twodim.segmentation.pad">
+<code class="descclassname">dpp.twodim.segmentation.</code><code class="descname">pad</code><span class="sig-paren">(</span><em>source</em>, <em>width</em>, <em>mode='reflect'</em>, <em>image_only=True</em>, <em>default_pixel=None</em>, <em>default_label=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpp/twodim/segmentation/segmentation.html#pad"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpp.twodim.segmentation.pad" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pads the input with a padding of the given width and according to the given mode.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>source</strong> (<em>iterable</em>) – An iterable over a number of datapoints where each datapoint is a tuple of a list of inputs and a parameter dictionary.</li>
+<li><strong>width</strong> (<em>int</em>) – The width of the padding.</li>
+<li><strong>mode</strong> (<em>str</em>) – One of the modes specified for numpy.pad.</li>
+<li><strong>image_only</strong> (<em>bool</em>) – If True, only the image will be padded. Else all inputs will be padded.</li>
+<li><strong>default_pixel</strong> (<em>number</em><em> or </em><em>None</em>) – If mode is ‘constant’, this value will be used to pad the image. If None, the minimum value will be used.</li>
+<li><strong>default_label</strong> (<em>number</em><em> or </em><em>None</em>) – If mode is ‘constant’ and image_only is False, this value will be used to pad the ground truth. If None, the minimum
+value will be used.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>gen</strong> – A generator that yields each transformed datapoint as a tuple of a list of inputs and a parameter dictionary.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">generator</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="dpp.twodim.segmentation.random_crop">
+<code class="descclassname">dpp.twodim.segmentation.</code><code class="descname">random_crop</code><span class="sig-paren">(</span><em>source</em>, <em>height</em>, <em>width</em>, <em>probability=1.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpp/twodim/segmentation/segmentation.html#random_crop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpp.twodim.segmentation.random_crop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extracts a crop of the given height and width from a random position for a random selection of the input. The position varies
+between datapoints, but is the same for all inputs of a single datapoint.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>source</strong> (<em>iterable</em>) – An iterable over a number of datapoints where each datapoint is a tuple of a list of inputs and a parameter dictionary.</li>
+<li><strong>height</strong> (<em>int</em>) – The height of the crop, the length along the first dimension.</li>
+<li><strong>width</strong> (<em>int</em>) – The width of the crop, the length along the second dimension.</li>
+<li><strong>probability</strong> (<em>float</em>) – The probability of cropping the input. If it is below 1, some inputs will be passed through unchanged.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>gen</strong> – A generator that yields each transformed datapoint as a tuple of a list of inputs and a parameter dictionary.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">generator</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="dpp.twodim.segmentation.random_resize">
+<code class="descclassname">dpp.twodim.segmentation.</code><code class="descname">random_resize</code><span class="sig-paren">(</span><em>source</em>, <em>desired_size</em>, <em>probability=1.0</em>, <em>lower_bound=0.9</em>, <em>upper_bound=1.1</em>, <em>default_pixel=None</em>, <em>default_label=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpp/twodim/segmentation/segmentation.html#random_resize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpp.twodim.segmentation.random_resize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Resizes a random selection of the input to the desired_size. The new size varies randomly within the given bounds. If the
+resized image is larger than the desired size, a centered crop of the given size is returned. If the new size is smaller than
+the desired size, it will be padded to the given size. The size before cropping or padding varies between datapoints, but is
+the same for all inputs of a single datapoint.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>source</strong> (<em>iterable</em>) – An iterable over a number of datapoints where each datapoint is a tuple of a list of inputs and a parameter dictionary.</li>
+<li><strong>desired_size</strong> (<em>array</em><em> or </em><em>list of length 2</em>) – The height and width of the output.</li>
+<li><strong>probability</strong> (<em>float</em>) – The probability of randomly resizing the input. If it is below 1, some inputs will simply be resized to the desired size.</li>
+<li><strong>lower_bound</strong> (<em>float</em>) – The minimum relative size of the resized image before padding.</li>
+<li><strong>upper_bound</strong> (<em>float</em>) – The maximum relative size of the resized image before cropping.</li>
+<li><strong>default_pixel</strong> (<em>number</em><em> or </em><em>None</em>) – The fill value for the image input. If None, the minimum value will be used.</li>
+<li><strong>default_label</strong> (<em>number</em><em> or </em><em>None</em>) – The fill value for the ground truth input. If None, the minimum value will be used.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>gen</strong> – A generator that yields each transformed datapoint as a tuple of a list of inputs and a parameter dictionary.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">generator</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="dpp.twodim.segmentation.random_rotation">
+<code class="descclassname">dpp.twodim.segmentation.</code><code class="descname">random_rotation</code><span class="sig-paren">(</span><em>source</em>, <em>probability=1.0</em>, <em>upper_bound=180</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpp/twodim/segmentation/segmentation.html#random_rotation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpp.twodim.segmentation.random_rotation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rotates a random selection of the input by a random amount. The rotation varies between datapoints, but is the same for
+all inputs of a single datapoint.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>source</strong> (<em>iterable</em>) – An iterable over a number of datapoints where each datapoint is a tuple of a list of inputs and a parameter dictionary.</li>
+<li><strong>probability</strong> (<em>float</em>) – The probability of rotating the input. If it is below 1, some inputs will be passed through unchanged.</li>
+<li><strong>upper_bound</strong> (<em>number</em>) – The maximum rotation in degrees.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>gen</strong> – A generator that yields each transformed datapoint as a tuple of a list of inputs and a parameter dictionary.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">generator</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="dpp.twodim.segmentation.random_translation">
+<code class="descclassname">dpp.twodim.segmentation.</code><code class="descname">random_translation</code><span class="sig-paren">(</span><em>source</em>, <em>probability=1.0</em>, <em>border_usage=0.5</em>, <em>default_border=0.25</em>, <em>label_of_interest=None</em>, <em>default_pixel=None</em>, <em>default_label=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpp/twodim/segmentation/segmentation.html#random_translation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpp.twodim.segmentation.random_translation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Translates a random selection of the input by a random amount. The translation varies between datapoints, but is the same for
+all inputs of a single datapoint.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>source</strong> (<em>iterable</em>) – An iterable over a number of datapoints where each datapoint is a tuple of a list of inputs and a parameter dictionary.</li>
+<li><strong>probability</strong> (<em>float</em>) – The probability of translating the input. If it is below 1, some inputs will be passed through unchanged.</li>
+<li><strong>border_usage</strong> (<em>float</em>) – If a label_of_interest is set, the border is defined as the area between the rectangular bounding box around the region of
+interest and the edge of the image. This parameter defines how much of that border may be used for translation or, in other
+words, how much of that border may end up outside of the new image.</li>
+<li><strong>default_border</strong> (<em>float</em>) – The amount of translation that is possible with respect to the input size, if label_of_interest is either not specified or
+not found in the input. border_usage does not apply to the default_border.</li>
+<li><strong>label_of_interest</strong> (<em>int</em>) – The label of interest in the ground truth.</li>
+<li><strong>default_pixel</strong> (<em>number</em><em> or </em><em>None</em>) – The fill value for the image input. If None, the minimum value will be used.</li>
+<li><strong>default_label</strong> (<em>number</em><em> or </em><em>None</em>) – The fill value for the ground truth input. If None, the minimum value will be used.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>gen</strong> – A generator that yields each transformed datapoint as a tuple of a list of inputs and a parameter dictionary.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">generator</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="dpp.twodim.segmentation.reduce_to_single_label_slice">
+<code class="descclassname">dpp.twodim.segmentation.</code><code class="descname">reduce_to_single_label_slice</code><span class="sig-paren">(</span><em>source</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpp/twodim/segmentation/segmentation.html#reduce_to_single_label_slice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpp.twodim.segmentation.reduce_to_single_label_slice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extracts the middle ground truth slice, if the input has a depth of more than 1 (for segmentation in 2.5 D). The depth
+is defined as the size of the last dimension.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>source</strong> (<em>iterable</em>) – An iterable over a number of datapoints where each datapoint is a tuple of a list of inputs and a parameter dictionary.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>gen</strong> – A generator that yields each transformed datapoint as a tuple of a list of inputs and a parameter dictionary.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">generator</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="dpp.twodim.segmentation.rescale_intensitiy">
+<code class="descclassname">dpp.twodim.segmentation.</code><code class="descname">rescale_intensitiy</code><span class="sig-paren">(</span><em>source</em>, <em>new_min=0</em>, <em>new_max=1</em>, <em>global_min=None</em>, <em>global_max=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpp/twodim/segmentation/segmentation.html#rescale_intensitiy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpp.twodim.segmentation.rescale_intensitiy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Scales all image values, so that they lie in between new_min and new_max.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>source</strong> (<em>iterable</em>) – An iterable over a number of datapoints where each datapoint is a tuple of a list of inputs and a parameter dictionary.</li>
+<li><strong>new_min</strong> (<em>float</em>) – The new minimum pixel value</li>
+<li><strong>new_max</strong> (<em>float</em>) – The new maximum pixel value.</li>
+<li><strong>global_min</strong> (<em>float</em><em> or </em><em>None</em>) – If None, the minimum pixel value of the input will be used. Else, the value of global_min will be used as the old minimum.</li>
+<li><strong>global_max</strong> (<em>float</em><em> or </em><em>None</em>) – If None, the maximum pixel value of the input will be used. Else, the value of global_min will be used as the old maximum.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>gen</strong> – A generator that yields each transformed datapoint as a tuple of a list of inputs and a parameter dictionary.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">generator</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="dpp.twodim.segmentation.resize">
+<code class="descclassname">dpp.twodim.segmentation.</code><code class="descname">resize</code><span class="sig-paren">(</span><em>source</em>, <em>desired_size</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpp/twodim/segmentation/segmentation.html#resize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpp.twodim.segmentation.resize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Resizes the input to the desired_size.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>source</strong> (<em>iterable</em>) – An iterable over a number of datapoints where each datapoint is a tuple of a list of inputs and a parameter dictionary.</li>
+<li><strong>desired_size</strong> (<em>array</em><em> or </em><em>list of length 2</em>) – The height and width of the output.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>gen</strong> – A generator that yields each transformed datapoint as a tuple of a list of inputs and a parameter dictionary.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">generator</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="dpp.twodim.segmentation.robust_img_scaling">
+<code class="descclassname">dpp.twodim.segmentation.</code><code class="descname">robust_img_scaling</code><span class="sig-paren">(</span><em>source</em>, <em>ignore_values=[]</em>, <em>initialization_generator=None</em>, <em>initialize=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpp/twodim/segmentation/segmentation.html#robust_img_scaling"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpp.twodim.segmentation.robust_img_scaling" title="Permalink to this definition">¶</a></dt>
+<dd><p>Applies scaling to the image pixel values, that is robust to outliers. The scaler centers the input values on the median, and
+scales the values according to the interquantile range (IQR), the range between the 1st and 3rd quartile (25th and 75th quantile).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>source</strong> (<em>iterable</em>) – An iterable over a number of datapoints where each datapoint is a tuple of a list of inputs and a parameter dictionary.</li>
+<li><strong>ignore_values</strong> (<em>list of int</em>) – A list of values that should be ignored when computing the median and IQR.</li>
+<li><strong>initialization_generator</strong> (<em>iterable</em>) – An iterable that supplies the datapoints for initialization. If None and initialize is True, the initialization generator
+of the pipeline is used, if possible.</li>
+<li><strong>initialize</strong> (<em>bool</em>) – If True, the median and scaling values will be pre-computed. Values will be saved together with the file name, so the
+file names in the output of the initialization generator should be unique.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>gen</strong> – A generator that yields each transformed datapoint as a tuple of a list of inputs and a parameter dictionary.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">generator</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="dpp.twodim.segmentation.transpose">
+<code class="descclassname">dpp.twodim.segmentation.</code><code class="descname">transpose</code><span class="sig-paren">(</span><em>source</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpp/twodim/segmentation/segmentation.html#transpose"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpp.twodim.segmentation.transpose" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the transpose of each input. The transpose is equal to the original input with the first to axes interchanged.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>source</strong> (<em>iterable</em>) – An iterable over a number of datapoints where each datapoint is a tuple of a list of inputs and a parameter dictionary.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>gen</strong> – A generator that yields each transformed datapoint as a tuple of a list of inputs and a parameter dictionary.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">generator</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="dpp.twodim.segmentation.medical.html" class="btn btn-neutral float-right" title="dpp.twodim.segmentation.medical package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="dpp.twodim.html" class="btn btn-neutral" title="dpp.twodim package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Felix Grün.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'1.0.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

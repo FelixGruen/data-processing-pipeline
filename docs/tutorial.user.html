@@ -1,0 +1,310 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>User Tutorial &mdash; Data Processing Pipeline 1.0.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="Data Processing Pipeline 1.0.0 documentation" href="index.html"/>
+        <link rel="next" title="Developer Tutorial" href="tutorial.developer.html"/>
+        <link rel="prev" title="Data Processing Pipeline" href="index.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Data Processing Pipeline
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorials and Guides:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Getting Started and User Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.developer.html">Developer Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">DPP Library Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dpp.html">Helper functions (dpp package)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dpp.reader.html">Helper functions (dpp.reader package)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dpp.twodim.segmentation.html">Segmentation in 2D and 2.5D (dpp.twodim.segmentation package)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dpp.twodim.segmentation.medical.html">Segmentation in 2D and 2.5D (dpp.twodim.segmentation.medical package)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dpp.threedim.segmentation.html">Segmentation in 3D (dpp.threedim.segmentation package)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dpp.threedim.segmentation.medical.html">Segmentation in 3D (dpp.threedim.segmentation.medical package)</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Data Processing Pipeline</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>User Tutorial</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/tutorial.user.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="user-tutorial">
+<h1>User Tutorial<a class="headerlink" href="#user-tutorial" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="getting-started">
+<h2>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h2>
+<p>Clone the git repository in a directory of your choise:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>bash:/directory/of/your/choice/$ git clone https://github.com/FelixGruen/data-processing-pipeline.git
+</pre></div>
+</div>
+<p>Add the directory to your Python path, either temporarily:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>bash:/directory/of/your/choice/$ export PYTHONPATH=$PYTHONPATH:/directory/of/your/choice/data-processing-pipeline/
+</pre></div>
+</div>
+<p>Or permanently:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>bash:/directory/of/your/choice/$ SITEDIR=$(python -c &#39;import site; site._script()&#39; --user-site)
+bash:/directory/of/your/choice/$ mkdir -p &quot;$SITEDIR&quot;
+bash:/directory/of/your/choice/$ echo &quot;/directory/of/your/choice/data-processing-pipeline/&quot; &gt; &quot;$SITEDIR/dpp.pth&quot;
+</pre></div>
+</div>
+<p>See if everything works:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>bash:/directory/of/your/choice/$ python -c &#39;import dpp; print(dpp.__version__)&#39;
+1.0.0
+</pre></div>
+</div>
+<p>If instead you see something like this:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>bash:/directory/of/your/choice/$ python -c &#39;import dpp; print(dpp.__version__)&#39;
+Traceback (most recent call last):
+  File &quot;&lt;string&gt;&quot;, line 1, in &lt;module&gt;
+ImportError: No module named dpp
+</pre></div>
+</div>
+<p>Check your PYTHONPATH variable and make sure that it actually points to the directory that contains the dpp folder, not to the dpp folder itself:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>bash:/directory/of/your/choice/$ echo $PYTHONPATH
+:/directory/of/your/choice/data-processing-pipeline/
+</pre></div>
+</div>
+</div>
+<div class="section" id="defining-a-pre-processing-pipeline">
+<h2>Defining a Pre-Processing Pipeline<a class="headerlink" href="#defining-a-pre-processing-pipeline" title="Permalink to this headline">¶</a></h2>
+<p>Defining a pipeline is dead simple. Simply list all the transformations you would like to perform on your data. Each transformation reads from the previous node in the pipeline, a Python generator, transforms the data, and then yields the transformed data. This means, that any node can be used like any other Python iterator, e.g. in a for-loop. Here is a little example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dpp</span>
+
+<span class="k">with</span> <span class="n">dpp</span><span class="o">.</span><span class="n">Pipeline</span><span class="p">()</span> <span class="k">as</span> <span class="n">pipe</span><span class="p">:</span>
+
+    <span class="c1"># Load slices</span>
+    <span class="n">node</span> <span class="o">=</span> <span class="n">dpp</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">file_paths</span><span class="p">(</span><span class="n">train_data_dir</span><span class="p">,</span> <span class="n">input_identifier</span><span class="o">=</span><span class="n">input_identifier</span><span class="p">,</span> <span class="n">ground_truth_identifier</span><span class="o">=</span><span class="n">ground_truth_identifier</span><span class="p">,</span> <span class="n">random</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">iterations</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">node</span> <span class="o">=</span> <span class="n">seg</span><span class="o">.</span><span class="n">medical</span><span class="o">.</span><span class="n">load_slice</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+
+    <span class="c1"># Random rotation then crop to fit</span>
+    <span class="n">node</span> <span class="o">=</span> <span class="n">seg</span><span class="o">.</span><span class="n">random_rotation</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">probability</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">upper_bound</span><span class="o">=</span><span class="mi">180</span><span class="p">)</span>
+
+    <span class="c1"># Random transformations</span>
+    <span class="n">node</span> <span class="o">=</span> <span class="n">seg</span><span class="o">.</span><span class="n">random_resize</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="p">[</span><span class="mi">256</span><span class="p">,</span> <span class="mi">256</span><span class="p">],</span> <span class="n">probability</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">lower_bound</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">upper_bound</span><span class="o">=</span><span class="mf">1.1</span><span class="p">,</span> <span class="n">default_pixel</span><span class="o">=-</span><span class="mf">100.</span><span class="p">,</span> <span class="n">default_label</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">node</span> <span class="o">=</span> <span class="n">seg</span><span class="o">.</span><span class="n">random_translation</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">probability</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">border_usage</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">default_border</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">label_of_interest</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">default_pixel</span><span class="o">=-</span><span class="mf">100.</span><span class="p">,</span> <span class="n">default_label</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1"># Adjust colours and labels</span>
+    <span class="n">node</span> <span class="o">=</span> <span class="n">seg</span><span class="o">.</span><span class="n">clip_img_values</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="o">-</span><span class="mf">100.</span><span class="p">,</span> <span class="mf">400.</span><span class="p">)</span>
+    <span class="n">node</span> <span class="o">=</span> <span class="n">seg</span><span class="o">.</span><span class="n">fuse_labels_greater_than</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+
+    <span class="c1"># Prepare as input</span>
+    <span class="n">node</span> <span class="o">=</span> <span class="n">seg</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span> <span class="ow">in</span> <span class="n">pipe</span><span class="p">:</span>
+    <span class="c1"># do something with the data</span>
+</pre></div>
+</div>
+<p>By convention, the data is a tuple of a list of inputs and a dictionary of parameters. For segmentation tasks the first element in the list of inputs is the actual input, while the second element is the ground truth.</p>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="tutorial.developer.html" class="btn btn-neutral float-right" title="Developer Tutorial" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral" title="Data Processing Pipeline" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Felix Grün.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'1.0.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

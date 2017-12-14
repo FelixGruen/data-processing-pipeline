@@ -1,0 +1,628 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>dpp.twodim.segmentation.medical &mdash; Data Processing Pipeline 1.0.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../../search.html"/>
+    <link rel="top" title="Data Processing Pipeline 1.0.0 documentation" href="../../../../index.html"/>
+        <link rel="up" title="Module code" href="../../../index.html"/> 
+
+  
+  <script src="../../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../../index.html" class="icon icon-home"> Data Processing Pipeline
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorials and Guides:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorial.user.html">Getting Started and User Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorial.developer.html">Developer Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">DPP Library Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../dpp.html">Helper functions (dpp package)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../dpp.reader.html">Helper functions (dpp.reader package)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../dpp.twodim.segmentation.html">Segmentation in 2D and 2.5D (dpp.twodim.segmentation package)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../dpp.twodim.segmentation.medical.html">Segmentation in 2D and 2.5D (dpp.twodim.segmentation.medical package)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../dpp.threedim.segmentation.html">Segmentation in 3D (dpp.threedim.segmentation package)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../dpp.threedim.segmentation.medical.html">Segmentation in 3D (dpp.threedim.segmentation.medical package)</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">Data Processing Pipeline</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>dpp.twodim.segmentation.medical</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for dpp.twodim.segmentation.medical</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">nibabel</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">...</span> <span class="k">import</span> <span class="n">helper</span>
+
+
+<span class="k">def</span> <span class="nf">__get_slice</span><span class="p">(</span><span class="n">volume</span><span class="p">,</span> <span class="n">slice_index</span><span class="p">,</span> <span class="n">dimension</span><span class="p">):</span>
+
+    <span class="k">if</span> <span class="n">dimension</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">out_slice</span> <span class="o">=</span> <span class="n">volume</span><span class="o">.</span><span class="n">dataobj</span><span class="p">[</span><span class="n">slice_index</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>
+    <span class="k">elif</span> <span class="n">dimension</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">out_slice</span> <span class="o">=</span> <span class="n">volume</span><span class="o">.</span><span class="n">dataobj</span><span class="p">[:,</span> <span class="n">slice_index</span><span class="p">,</span> <span class="p">:]</span>
+    <span class="k">elif</span> <span class="n">dimension</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">out_slice</span> <span class="o">=</span> <span class="n">volume</span><span class="o">.</span><span class="n">dataobj</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">slice_index</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">Error</span><span class="p">(</span><span class="s2">&quot;Unknown dimension: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">dimension</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">out_slice</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">__get_slices</span><span class="p">(</span><span class="n">volume</span><span class="p">,</span> <span class="n">start_index</span><span class="p">,</span> <span class="n">end_index</span><span class="p">,</span> <span class="n">dimension</span><span class="p">):</span>
+
+    <span class="k">if</span> <span class="n">dimension</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">out_slices</span> <span class="o">=</span> <span class="n">volume</span><span class="o">.</span><span class="n">dataobj</span><span class="p">[</span><span class="n">start_index</span><span class="p">:</span><span class="n">end_index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>
+        <span class="n">out_slices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">out_slices</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">dimension</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">out_slices</span> <span class="o">=</span> <span class="n">volume</span><span class="o">.</span><span class="n">dataobj</span><span class="p">[:,</span> <span class="n">start_index</span><span class="p">:</span><span class="n">end_index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="n">out_slices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">out_slices</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">dimension</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">out_slices</span> <span class="o">=</span> <span class="n">volume</span><span class="o">.</span><span class="n">dataobj</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">start_index</span><span class="p">:</span><span class="n">end_index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">Error</span><span class="p">(</span><span class="s2">&quot;Unknown dimension: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">dimension</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">out_slices</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">__set_parameters</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">dimension</span><span class="p">):</span>
+
+    <span class="k">if</span> <span class="n">dimension</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;spacing&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">header</span><span class="o">.</span><span class="n">get_zooms</span><span class="p">()[</span><span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;size&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">header</span><span class="o">.</span><span class="n">get_data_shape</span><span class="p">()[</span><span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">dimension</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;spacing&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">header</span><span class="o">.</span><span class="n">get_zooms</span><span class="p">()[</span><span class="mi">0</span><span class="p">:</span><span class="mi">1</span><span class="p">],</span> <span class="n">header</span><span class="o">.</span><span class="n">get_zooms</span><span class="p">()[</span><span class="mi">2</span><span class="p">:</span><span class="mi">3</span><span class="p">]])</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;size&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">header</span><span class="o">.</span><span class="n">get_data_shape</span><span class="p">()[</span><span class="mi">0</span><span class="p">:</span><span class="mi">1</span><span class="p">],</span> <span class="n">header</span><span class="o">.</span><span class="n">get_data_shape</span><span class="p">()[</span><span class="mi">2</span><span class="p">:</span><span class="mi">3</span><span class="p">]])</span>
+    <span class="k">elif</span> <span class="n">dimension</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;spacing&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">header</span><span class="o">.</span><span class="n">get_zooms</span><span class="p">()[:</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;size&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">header</span><span class="o">.</span><span class="n">get_data_shape</span><span class="p">()[:</span><span class="mi">2</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">Error</span><span class="p">(</span><span class="s2">&quot;Unknown dimension: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">dimension</span><span class="p">))</span>
+
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;original_spacing&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;spacing&quot;</span><span class="p">]</span>
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;original_size&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;size&quot;</span><span class="p">]</span>
+
+    <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;nifti_header&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">header</span>
+
+    <span class="k">return</span> <span class="n">parameters</span>
+
+
+<div class="viewcode-block" id="load_slice"><a class="viewcode-back" href="../../../../dpp.twodim.segmentation.medical.html#dpp.twodim.segmentation.medical.load_slice">[docs]</a><span class="k">def</span> <span class="nf">load_slice</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">slice_type</span><span class="o">=</span><span class="s1">&#39;axial&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Loads a random slice from the medical volumes specified by the provided paths.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    source : iterable</span>
+<span class="sd">        An iterable over a number of datapoints where each datapoint is a tuple of a list of file paths and a parameter dictionary.</span>
+<span class="sd">    slice_type: &#39;coronal&#39;, &#39;sagittal&#39;, &#39;axial&#39;, or None</span>
+<span class="sd">        The anatomical plane of the returned slices. If None, a plane will be drawn at random for each slice.</span>
+<span class="sd">    dtype: data-type</span>
+<span class="sd">        The desired data-type for the returned arrays.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gen : generator</span>
+<span class="sd">        A generator that yields each transformed datapoint as a tuple of a list of inputs and a parameter dictionary.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># If slice type is specified, set dimension</span>
+    <span class="k">if</span> <span class="n">slice_type</span> <span class="o">==</span> <span class="s1">&#39;coronal&#39;</span><span class="p">:</span>
+        <span class="n">dimension</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">elif</span> <span class="n">slice_type</span> <span class="o">==</span> <span class="s1">&#39;sagittal&#39;</span><span class="p">:</span>
+        <span class="n">dimension</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">elif</span> <span class="n">slice_type</span> <span class="o">==</span> <span class="s1">&#39;axial&#39;</span><span class="p">:</span>
+        <span class="n">dimension</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="k">elif</span> <span class="n">slice_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">dimension</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">Error</span><span class="p">(</span><span class="s2">&quot;Unknown slice_type: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">slice_type</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">transformation</span><span class="p">(</span><span class="n">dimension</span><span class="p">):</span>
+
+        <span class="k">for</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">parameters</span> <span class="ow">in</span> <span class="n">source</span><span class="p">:</span>
+
+            <span class="c1"># If slice type is not specified, set random dimension</span>
+            <span class="k">if</span> <span class="n">slice_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">dimension</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+
+            <span class="n">outputs</span> <span class="o">=</span> <span class="p">[]</span>
+
+            <span class="n">nifti</span> <span class="o">=</span> <span class="n">nibabel</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">slice_index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="n">nifti</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">get_data_shape</span><span class="p">()[</span><span class="n">dimension</span><span class="p">])</span>
+
+            <span class="n">img_slice</span> <span class="o">=</span> <span class="n">__get_slice</span><span class="p">(</span><span class="n">nifti</span><span class="p">,</span> <span class="n">slice_index</span><span class="p">,</span> <span class="n">dimension</span><span class="p">)</span>
+            <span class="n">outputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">img_slice</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">))</span>
+
+            <span class="n">header</span> <span class="o">=</span> <span class="n">nifti</span><span class="o">.</span><span class="n">header</span>
+            <span class="n">parameters</span> <span class="o">=</span> <span class="n">__set_parameters</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">dimension</span><span class="p">)</span>
+
+            <span class="n">nifti</span> <span class="o">=</span> <span class="n">nibabel</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">inputs</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">label_slice</span> <span class="o">=</span> <span class="n">__get_slice</span><span class="p">(</span><span class="n">nifti</span><span class="p">,</span> <span class="n">slice_index</span><span class="p">,</span> <span class="n">dimension</span><span class="p">)</span>
+            <span class="n">outputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">label_slice</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">))</span>
+
+            <span class="k">yield</span> <span class="p">(</span><span class="n">outputs</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
+
+    <span class="n">gen</span> <span class="o">=</span> <span class="n">generator</span><span class="p">(</span><span class="n">dimension</span><span class="p">)</span>
+    <span class="n">helper</span><span class="o">.</span><span class="n">sign_up</span><span class="p">(</span><span class="n">gen</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">gen</span></div>
+
+
+<div class="viewcode-block" id="load_slice_filtered"><a class="viewcode-back" href="../../../../dpp.twodim.segmentation.medical.html#dpp.twodim.segmentation.medical.load_slice_filtered">[docs]</a><span class="k">def</span> <span class="nf">load_slice_filtered</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">label_of_interest</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label_required</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">min_frequency</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">max_tries</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">single_label_slice</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">slice_type</span><span class="o">=</span><span class="s1">&#39;axial&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Loads a random slice which contains the given label of interest from the medical volumes specified by the provided paths. Slices</span>
+<span class="sd">    are loaded in random order until either a slice with the given label of interest is found or the maximum number of tries has been</span>
+<span class="sd">    reached.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    source : iterable</span>
+<span class="sd">        An iterable over a number of datapoints where each datapoint is a tuple of a list of file paths and a parameter dictionary.</span>
+<span class="sd">    label_of_interest: int</span>
+<span class="sd">        A label that should be present in the returned slice. If depth is greater than 1, only the center plane will be checked.</span>
+<span class="sd">    label_required: int</span>
+<span class="sd">        A label that must be present in the returned slice. If depth is greater than 1, only the center plane will be checked.</span>
+<span class="sd">        If this is not needed, it can be set to the same number as label_of_interest.</span>
+<span class="sd">    min_frequency: float</span>
+<span class="sd">        The minimum proportion of outputs with the given label of interest. As long as the actual proportion is greater than the given</span>
+<span class="sd">        minimum frequency, the first randomly drawn slice will be returned from each volume. This can be used to mix slices without</span>
+<span class="sd">        the label of interest into the training set.</span>
+<span class="sd">    max_tries: int</span>
+<span class="sd">        The maximum number of slices which are drawn in random order from each volume. Once this maximum is reached for a volume, the</span>
+<span class="sd">        first slice with the given required label is returned.</span>
+<span class="sd">    depth: int</span>
+<span class="sd">        The depth of the slice. Must be an uneven integer greater than zero.</span>
+<span class="sd">    single_label_slice: bool</span>
+<span class="sd">        If False, the returned label slice will have the same depth as the returned image slice. If True, the label slice will have</span>
+<span class="sd">        depth 1 and correspond to the center plane of the returned image slice.</span>
+<span class="sd">    slice_type: &#39;coronal&#39;, &#39;sagittal&#39;, &#39;axial&#39;, or None</span>
+<span class="sd">        The anatomical plane of the returned slices. If None, a plane will be drawn at random for each volume.</span>
+<span class="sd">    dtype: data-type</span>
+<span class="sd">        The desired data-type for the returned arrays.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gen : generator</span>
+<span class="sd">        A generator that yields each transformed datapoint as a tuple of a list of inputs and a parameter dictionary.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># If slice type is specified, set dimension</span>
+    <span class="k">if</span> <span class="n">slice_type</span> <span class="o">==</span> <span class="s1">&#39;coronal&#39;</span><span class="p">:</span>
+        <span class="n">dimension</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">elif</span> <span class="n">slice_type</span> <span class="o">==</span> <span class="s1">&#39;sagittal&#39;</span><span class="p">:</span>
+        <span class="n">dimension</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">elif</span> <span class="n">slice_type</span> <span class="o">==</span> <span class="s1">&#39;axial&#39;</span><span class="p">:</span>
+        <span class="n">dimension</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="k">elif</span> <span class="n">slice_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">dimension</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">Error</span><span class="p">(</span><span class="s2">&quot;Unknown slice_type: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">slice_type</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">depth</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="ow">or</span> <span class="mi">2</span> <span class="o">%</span> <span class="mi">1</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">or</span> <span class="p">((</span><span class="n">depth</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">!=</span> <span class="n">depth</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Depth must be a positive uneven integer. Is: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">depth</span><span class="p">))</span>
+
+    <span class="n">radius</span> <span class="o">=</span> <span class="p">(</span><span class="n">depth</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+
+    <span class="k">def</span> <span class="nf">generator</span><span class="p">(</span><span class="n">dimension</span><span class="p">):</span>
+
+        <span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># counts the number of slices with the label_of_interest</span>
+        <span class="n">total</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># counts the total number of slices</span>
+
+        <span class="k">for</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">parameters</span> <span class="ow">in</span> <span class="n">source</span><span class="p">:</span>
+
+            <span class="c1"># If slice type is not specified, set random dimension</span>
+            <span class="k">if</span> <span class="n">slice_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">dimension</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+
+            <span class="n">label_volume</span> <span class="o">=</span> <span class="n">nibabel</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">inputs</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+            <span class="n">min_</span> <span class="o">=</span> <span class="n">radius</span>
+            <span class="n">max_</span> <span class="o">=</span> <span class="n">label_volume</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">get_data_shape</span><span class="p">()[</span><span class="n">dimension</span><span class="p">]</span> <span class="o">-</span> <span class="n">radius</span>
+            <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">permutation</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">min_</span><span class="p">,</span> <span class="n">max_</span><span class="p">))</span>
+            <span class="n">indices</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">indices</span><span class="p">]</span>  <span class="c1"># nibabel doesn&#39;t like numpy type indices</span>
+
+            <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">found</span> <span class="o">=</span> <span class="kc">False</span>
+
+            <span class="k">if</span> <span class="n">total</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">counter</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">total</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">min_frequency</span><span class="p">:</span>
+
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">max_tries</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">))):</span>
+                    <span class="n">label_slice</span> <span class="o">=</span> <span class="n">__get_slice</span><span class="p">(</span><span class="n">label_volume</span><span class="p">,</span> <span class="n">indices</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">dimension</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">label_required</span> <span class="ow">in</span> <span class="n">label_slice</span> <span class="ow">and</span> <span class="n">label_of_interest</span> <span class="ow">in</span> <span class="n">label_slice</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">depth</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">single_label_slice</span><span class="p">:</span>
+                            <span class="n">label_slice</span> <span class="o">=</span> <span class="n">__get_slices</span><span class="p">(</span><span class="n">label_volume</span><span class="p">,</span> <span class="n">indices</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">radius</span><span class="p">,</span> <span class="n">indices</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">radius</span><span class="p">,</span> <span class="n">dimension</span><span class="p">)</span>
+                        <span class="n">found</span> <span class="o">=</span> <span class="kc">True</span>
+                        <span class="n">counter</span> <span class="o">+=</span> <span class="mi">1</span>
+                        <span class="k">break</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">found</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">)):</span>
+                    <span class="n">label_slice</span> <span class="o">=</span> <span class="n">__get_slice</span><span class="p">(</span><span class="n">label_volume</span><span class="p">,</span> <span class="n">indices</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">dimension</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">label_required</span> <span class="ow">in</span> <span class="n">label_slice</span><span class="p">:</span>
+                        <span class="n">found</span> <span class="o">=</span> <span class="kc">True</span>
+                        <span class="k">if</span> <span class="n">label_of_interest</span> <span class="ow">in</span> <span class="n">label_slice</span><span class="p">:</span>
+                            <span class="n">counter</span> <span class="o">+=</span> <span class="mi">1</span>
+                        <span class="k">if</span> <span class="n">depth</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">single_label_slice</span><span class="p">:</span>
+                            <span class="n">label_slice</span> <span class="o">=</span> <span class="n">__get_slices</span><span class="p">(</span><span class="n">label_volume</span><span class="p">,</span> <span class="n">indices</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">radius</span><span class="p">,</span> <span class="n">indices</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">radius</span><span class="p">,</span> <span class="n">dimension</span><span class="p">)</span>
+                        <span class="k">break</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">found</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="n">total</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">image_volume</span> <span class="o">=</span> <span class="n">nibabel</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+            <span class="n">outputs</span> <span class="o">=</span> <span class="p">[]</span>
+
+            <span class="c1"># image slice first</span>
+            <span class="k">if</span> <span class="n">depth</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">outputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">__get_slices</span><span class="p">(</span><span class="n">image_volume</span><span class="p">,</span> <span class="n">indices</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">radius</span><span class="p">,</span> <span class="n">indices</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">radius</span><span class="p">,</span> <span class="n">dimension</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">outputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">__get_slice</span><span class="p">(</span><span class="n">image_volume</span><span class="p">,</span> <span class="n">indices</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">dimension</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">))</span>
+            <span class="n">outputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">label_slice</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">))</span>
+
+            <span class="n">header</span> <span class="o">=</span> <span class="n">image_volume</span><span class="o">.</span><span class="n">header</span>
+            <span class="n">parameters</span> <span class="o">=</span> <span class="n">__set_parameters</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">dimension</span><span class="p">)</span>
+
+            <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;slices_total&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">total</span>
+            <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;slices_label_of_interest&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">counter</span>
+
+            <span class="k">yield</span> <span class="p">(</span><span class="n">outputs</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
+
+    <span class="n">gen</span> <span class="o">=</span> <span class="n">generator</span><span class="p">(</span><span class="n">dimension</span><span class="p">)</span>
+    <span class="n">helper</span><span class="o">.</span><span class="n">sign_up</span><span class="p">(</span><span class="n">gen</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">gen</span></div>
+
+
+<div class="viewcode-block" id="load_all_slices_filtered"><a class="viewcode-back" href="../../../../dpp.twodim.segmentation.medical.html#dpp.twodim.segmentation.medical.load_all_slices_filtered">[docs]</a><span class="k">def</span> <span class="nf">load_all_slices_filtered</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">label_required</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">single_label_slice</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">slice_type</span><span class="o">=</span><span class="s1">&#39;axial&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Loads all slices which contain the given required label from the medical volumes specified by the provided paths and returns</span>
+<span class="sd">    them one by one.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    source : iterable</span>
+<span class="sd">        An iterable over a number of datapoints where each datapoint is a tuple of a list of file paths and a parameter dictionary.</span>
+<span class="sd">    label_required: int</span>
+<span class="sd">        A label that must be present in the returned slice. If depth is greater than 1, only the center plane will be checked.</span>
+<span class="sd">    depth: int</span>
+<span class="sd">        The depth of the slices. Must be an uneven integer greater than zero. If depth is greater than 1, the returned slices will</span>
+<span class="sd">        overlap.</span>
+<span class="sd">    single_label_slice: bool</span>
+<span class="sd">        If False, the returned label slice will have the same depth as the returned image slice. If True, the label slice will have</span>
+<span class="sd">        depth 1 and correspond to the center plane of the returned image slice.</span>
+<span class="sd">    slice_type: &#39;coronal&#39;, &#39;sagittal&#39;, &#39;axial&#39;, or None</span>
+<span class="sd">        The anatomical plane of the returned slices. If None, a plane will be drawn at random for each volume.</span>
+<span class="sd">    dtype: data-type</span>
+<span class="sd">        The desired data-type for the returned arrays.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gen : generator</span>
+<span class="sd">        A generator that yields each transformed datapoint as a tuple of a list of inputs and a parameter dictionary.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">load_all_slices</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">label_required</span><span class="o">=</span><span class="n">label_required</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="n">depth</span><span class="p">,</span> <span class="n">single_label_slice</span><span class="o">=</span><span class="n">single_label_slice</span><span class="p">,</span> <span class="n">slice_type</span><span class="o">=</span><span class="n">slice_type</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="load_all_slices"><a class="viewcode-back" href="../../../../dpp.twodim.segmentation.medical.html#dpp.twodim.segmentation.medical.load_all_slices">[docs]</a><span class="k">def</span> <span class="nf">load_all_slices</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">label_required</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">single_label_slice</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">slice_type</span><span class="o">=</span><span class="s1">&#39;axial&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Loads all slices from the medical volumes specified by the provided paths and returns them one by one.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    source : iterable</span>
+<span class="sd">        An iterable over a number of datapoints where each datapoint is a tuple of a list of file paths and a parameter dictionary.</span>
+<span class="sd">    label_required: int or None</span>
+<span class="sd">        A label that must be present in the returned slice. If depth is greater than 1, only the center plane will be checked.</span>
+<span class="sd">    depth: int</span>
+<span class="sd">        The depth of the slices. Must be an uneven integer greater than zero. If depth is greater than 1, the returned slices will</span>
+<span class="sd">        overlap.</span>
+<span class="sd">    single_label_slice: bool</span>
+<span class="sd">        If False, the returned label slice will have the same depth as the returned image slice. If True, the label slice will have</span>
+<span class="sd">        depth 1 and correspond to the center plane of the returned image slice.</span>
+<span class="sd">    slice_type: &#39;coronal&#39;, &#39;sagittal&#39;, &#39;axial&#39;, or None</span>
+<span class="sd">        The anatomical plane of the returned slices. If None, a plane will be drawn at random for each volume.</span>
+<span class="sd">    dtype: data-type</span>
+<span class="sd">        The desired data-type for the returned arrays.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gen : generator</span>
+<span class="sd">        A generator that yields each transformed datapoint as a tuple of a list of inputs and a parameter dictionary.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># If slice type is specified, set dimension</span>
+    <span class="k">if</span> <span class="n">slice_type</span> <span class="o">==</span> <span class="s1">&#39;coronal&#39;</span><span class="p">:</span>
+        <span class="n">dimension</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">elif</span> <span class="n">slice_type</span> <span class="o">==</span> <span class="s1">&#39;sagittal&#39;</span><span class="p">:</span>
+        <span class="n">dimension</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">elif</span> <span class="n">slice_type</span> <span class="o">==</span> <span class="s1">&#39;axial&#39;</span><span class="p">:</span>
+        <span class="n">dimension</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="k">elif</span> <span class="n">slice_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">dimension</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">Error</span><span class="p">(</span><span class="s2">&quot;Unknown slice_type: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">slice_type</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">depth</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="ow">or</span> <span class="mi">2</span> <span class="o">%</span> <span class="mi">1</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">or</span> <span class="p">((</span><span class="n">depth</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">!=</span> <span class="n">depth</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Depth must be a positive uneven integer. Is: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">depth</span><span class="p">))</span>
+
+    <span class="n">radius</span> <span class="o">=</span> <span class="p">(</span><span class="n">depth</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+
+    <span class="k">def</span> <span class="nf">generator</span><span class="p">(</span><span class="n">dimension</span><span class="p">):</span>
+
+        <span class="k">for</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">parameters</span> <span class="ow">in</span> <span class="n">source</span><span class="p">:</span>
+
+            <span class="nb">print</span> <span class="s2">&quot;Loading </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;file_names&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+
+            <span class="c1"># If slice type is not specified, set random dimension</span>
+            <span class="k">if</span> <span class="n">slice_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">dimension</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+
+            <span class="n">image_volume</span> <span class="o">=</span> <span class="n">nibabel</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">header</span> <span class="o">=</span> <span class="n">image_volume</span><span class="o">.</span><span class="n">header</span>
+
+            <span class="n">image_volume</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">image_volume</span><span class="o">.</span><span class="n">dataobj</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
+            <span class="n">label_volume</span> <span class="o">=</span> <span class="n">nibabel</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">inputs</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">label_volume</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">label_volume</span><span class="o">.</span><span class="n">dataobj</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
+
+            <span class="n">parameters</span> <span class="o">=</span> <span class="n">__set_parameters</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">dimension</span><span class="p">)</span>
+
+            <span class="n">min_</span> <span class="o">=</span> <span class="n">radius</span>
+            <span class="n">max_</span> <span class="o">=</span> <span class="n">header</span><span class="o">.</span><span class="n">get_data_shape</span><span class="p">()[</span><span class="n">dimension</span><span class="p">]</span> <span class="o">-</span> <span class="n">radius</span>
+
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="n">min_</span><span class="p">,</span> <span class="n">max_</span><span class="p">):</span>
+
+                <span class="k">if</span> <span class="n">dimension</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">label_slice</span> <span class="o">=</span> <span class="n">label_volume</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>
+                <span class="k">elif</span> <span class="n">dimension</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">label_slice</span> <span class="o">=</span> <span class="n">label_volume</span><span class="p">[:,</span> <span class="n">i</span><span class="p">,</span> <span class="p">:]</span>
+                <span class="k">elif</span> <span class="n">dimension</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                    <span class="n">label_slice</span> <span class="o">=</span> <span class="n">label_volume</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">i</span><span class="p">]</span>
+
+                <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">label_required</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">label_required</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">label_slice</span><span class="p">):</span>
+                    <span class="k">continue</span>
+
+                <span class="n">outputs</span> <span class="o">=</span> <span class="p">[]</span>
+
+                <span class="k">if</span> <span class="n">depth</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+
+                    <span class="n">start_index</span> <span class="o">=</span> <span class="n">i</span> <span class="o">-</span> <span class="n">radius</span>
+                    <span class="n">end_index</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="n">radius</span>
+
+                    <span class="k">if</span> <span class="n">dimension</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">image_slice</span> <span class="o">=</span> <span class="n">image_volume</span><span class="p">[</span><span class="n">start_index</span><span class="p">:</span><span class="n">end_index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>
+                        <span class="n">image_slice</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">image_slice</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+                    <span class="k">elif</span> <span class="n">dimension</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                        <span class="n">image_slice</span> <span class="o">=</span> <span class="n">image_volume</span><span class="p">[:,</span> <span class="n">start_index</span><span class="p">:</span><span class="n">end_index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
+                        <span class="n">image_slice</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">image_slice</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+                    <span class="k">elif</span> <span class="n">dimension</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                        <span class="n">image_slice</span> <span class="o">=</span> <span class="n">image_volume</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">start_index</span><span class="p">:</span><span class="n">end_index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">single_label_slice</span><span class="p">:</span>
+
+                        <span class="k">if</span> <span class="n">dimension</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                            <span class="n">label_slice</span> <span class="o">=</span> <span class="n">label_volume</span><span class="p">[</span><span class="n">start_index</span><span class="p">:</span><span class="n">end_index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>
+                            <span class="n">label_slice</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">label_slice</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+                        <span class="k">elif</span> <span class="n">dimension</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                            <span class="n">label_slice</span> <span class="o">=</span> <span class="n">label_volume</span><span class="p">[:,</span> <span class="n">start_index</span><span class="p">:</span><span class="n">end_index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
+                            <span class="n">label_slice</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">label_slice</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+                        <span class="k">elif</span> <span class="n">dimension</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                            <span class="n">label_slice</span> <span class="o">=</span> <span class="n">label_volume</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">start_index</span><span class="p">:</span><span class="n">end_index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+                
+                <span class="k">else</span><span class="p">:</span>
+
+                    <span class="k">if</span> <span class="n">dimension</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">image_slice</span> <span class="o">=</span> <span class="n">image_volume</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>
+                    <span class="k">elif</span> <span class="n">dimension</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                        <span class="n">image_slice</span> <span class="o">=</span> <span class="n">image_volume</span><span class="p">[:,</span> <span class="n">i</span><span class="p">,</span> <span class="p">:]</span>
+                    <span class="k">elif</span> <span class="n">dimension</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                        <span class="n">image_slice</span> <span class="o">=</span> <span class="n">image_volume</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">i</span><span class="p">]</span>
+
+                <span class="n">outputs</span> <span class="o">=</span> <span class="p">[</span><span class="n">image_slice</span><span class="p">,</span> <span class="n">label_slice</span><span class="p">]</span>
+                <span class="k">yield</span> <span class="p">(</span><span class="n">outputs</span><span class="p">,</span> <span class="n">parameters</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+
+    <span class="n">gen</span> <span class="o">=</span> <span class="n">generator</span><span class="p">(</span><span class="n">dimension</span><span class="p">)</span>
+    <span class="n">helper</span><span class="o">.</span><span class="n">sign_up</span><span class="p">(</span><span class="n">gen</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">gen</span></div>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Felix Grün.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../../',
+            VERSION:'1.0.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

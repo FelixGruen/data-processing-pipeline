@@ -1,0 +1,65 @@
+Developer Tutorial
+==================
+
+Adding a new Function to the Pipeline
+-------------------------------------
+
+Implementing a new function is very simple. You implement them, as if you would only apply them to a single piece of input data.
+
+Let's say, you would like to use Numpy's clip function to clip the pixel values of your input. The function application would probably look like this::
+
+    np.clip(my_input, minimum, maximum, out=my_input)
+
+with a certain minimum and maximum value. To turn this into a node in our pipeline, we now wrap this into a function that takes the input, applies the clip function to it and then returns the transformed input::
+
+    def transformation(input_tuple):
+        inputs, parameters = input_tuple
+
+        np.clip(inputs[0], minimum, maximum, out=inputs[0])
+
+        return (inputs, parameters)
+
+By convention, the data is a tuple of a list of inputs and a dictionary of parameters. For segmentation tasks the first element in the list of inputs is the actual input, while the second element is the ground truth.
+
+Now we can pass our transformation function to a handy helper function, which will turn our function into a generator::
+
+    def transformation(input_tuple):
+        inputs, parameters = input_tuple
+
+        np.clip(inputs[0], minimum, maximum, out=inputs[0])
+
+        return (inputs, parameters)
+
+    clip_generator = helper.apply(source, transformation)
+
+To make this more easily usable, we will wrap the entire block in another function::
+
+    def clip_img_values(source, minimum, maximum):
+
+        def transformation(input_tuple):
+            inputs, parameters = input_tuple
+
+            np.clip(inputs[0], minimum, maximum, out=inputs[0])
+
+            return (inputs, parameters)
+
+        return helper.apply(source, transformation)
+
+So now, when we define our preprocessing pipeline, we can use our new building block in it::
+
+    import dpp
+
+    with dpp.Pipeline() as pipe:
+
+        # Load slices
+        node = dpp.reader.file_paths(train_data_dir, input_identifier=input_identifier, ground_truth_identifier=ground_truth_identifier, random=False, iterations=1)
+        node = seg.medical.load_slice(node)
+
+        # Other transformations
+
+        node = clip_img_values(node, -100., 400.)
+
+        # Other transformations
+
+    for (inputs, parameters) in pipe:
+        # do something with the data

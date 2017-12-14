@@ -1,0 +1,393 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>dpp.twodim.segmentation.medical package &mdash; Data Processing Pipeline 1.0.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="Data Processing Pipeline 1.0.0 documentation" href="index.html"/>
+        <link rel="up" title="dpp.twodim.segmentation package" href="dpp.twodim.segmentation.html"/>
+        <link rel="next" title="dpp.threedim package" href="dpp.threedim.html"/>
+        <link rel="prev" title="dpp.twodim.segmentation package" href="dpp.twodim.segmentation.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Data Processing Pipeline
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorials and Guides:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.user.html">Getting Started and User Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.developer.html">Developer Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">DPP Library Reference:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="dpp.html">Helper functions (dpp package)</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="dpp.reader.html">dpp.reader package</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="dpp.twodim.html">dpp.twodim package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="dpp.twodim.segmentation.html">dpp.twodim.segmentation package</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">dpp.twodim.segmentation.medical package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dpp.threedim.html">dpp.threedim package</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dpp.reader.html">Helper functions (dpp.reader package)</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="dpp.twodim.segmentation.html">Segmentation in 2D and 2.5D (dpp.twodim.segmentation package)</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">dpp.twodim.segmentation.medical package</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Segmentation in 2D and 2.5D (dpp.twodim.segmentation.medical package)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dpp.threedim.segmentation.html">Segmentation in 3D (dpp.threedim.segmentation package)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dpp.threedim.segmentation.medical.html">Segmentation in 3D (dpp.threedim.segmentation.medical package)</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Data Processing Pipeline</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="dpp.html">dpp package</a> &raquo;</li>
+        
+          <li><a href="dpp.twodim.html">dpp.twodim package</a> &raquo;</li>
+        
+          <li><a href="dpp.twodim.segmentation.html">dpp.twodim.segmentation package</a> &raquo;</li>
+        
+      <li>dpp.twodim.segmentation.medical package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/dpp.twodim.segmentation.medical.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="dpp-twodim-segmentation-medical-package">
+<h1>dpp.twodim.segmentation.medical package<a class="headerlink" href="#dpp-twodim-segmentation-medical-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-dpp.twodim.segmentation.medical">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-dpp.twodim.segmentation.medical" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="dpp.twodim.segmentation.medical.load_all_slices">
+<code class="descclassname">dpp.twodim.segmentation.medical.</code><code class="descname">load_all_slices</code><span class="sig-paren">(</span><em>source</em>, <em>label_required=None</em>, <em>depth=1</em>, <em>single_label_slice=False</em>, <em>slice_type='axial'</em>, <em>dtype=&lt;type 'numpy.float32'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpp/twodim/segmentation/medical.html#load_all_slices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpp.twodim.segmentation.medical.load_all_slices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads all slices from the medical volumes specified by the provided paths and returns them one by one.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>source</strong> (<em>iterable</em>) – An iterable over a number of datapoints where each datapoint is a tuple of a list of file paths and a parameter dictionary.</li>
+<li><strong>label_required</strong> (<em>int</em><em> or </em><em>None</em>) – A label that must be present in the returned slice. If depth is greater than 1, only the center plane will be checked.</li>
+<li><strong>depth</strong> (<em>int</em>) – The depth of the slices. Must be an uneven integer greater than zero. If depth is greater than 1, the returned slices will
+overlap.</li>
+<li><strong>single_label_slice</strong> (<em>bool</em>) – If False, the returned label slice will have the same depth as the returned image slice. If True, the label slice will have
+depth 1 and correspond to the center plane of the returned image slice.</li>
+<li><strong>slice_type</strong> (<em>'coronal'</em><em>, </em><em>'sagittal'</em><em>, </em><em>'axial'</em><em>, or </em><em>None</em>) – The anatomical plane of the returned slices. If None, a plane will be drawn at random for each volume.</li>
+<li><strong>dtype</strong> (<em>data-type</em>) – The desired data-type for the returned arrays.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>gen</strong> – A generator that yields each transformed datapoint as a tuple of a list of inputs and a parameter dictionary.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">generator</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="dpp.twodim.segmentation.medical.load_all_slices_filtered">
+<code class="descclassname">dpp.twodim.segmentation.medical.</code><code class="descname">load_all_slices_filtered</code><span class="sig-paren">(</span><em>source</em>, <em>label_required=1</em>, <em>depth=1</em>, <em>single_label_slice=False</em>, <em>slice_type='axial'</em>, <em>dtype=&lt;type 'numpy.float32'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpp/twodim/segmentation/medical.html#load_all_slices_filtered"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpp.twodim.segmentation.medical.load_all_slices_filtered" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads all slices which contain the given required label from the medical volumes specified by the provided paths and returns
+them one by one.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>source</strong> (<em>iterable</em>) – An iterable over a number of datapoints where each datapoint is a tuple of a list of file paths and a parameter dictionary.</li>
+<li><strong>label_required</strong> (<em>int</em>) – A label that must be present in the returned slice. If depth is greater than 1, only the center plane will be checked.</li>
+<li><strong>depth</strong> (<em>int</em>) – The depth of the slices. Must be an uneven integer greater than zero. If depth is greater than 1, the returned slices will
+overlap.</li>
+<li><strong>single_label_slice</strong> (<em>bool</em>) – If False, the returned label slice will have the same depth as the returned image slice. If True, the label slice will have
+depth 1 and correspond to the center plane of the returned image slice.</li>
+<li><strong>slice_type</strong> (<em>'coronal'</em><em>, </em><em>'sagittal'</em><em>, </em><em>'axial'</em><em>, or </em><em>None</em>) – The anatomical plane of the returned slices. If None, a plane will be drawn at random for each volume.</li>
+<li><strong>dtype</strong> (<em>data-type</em>) – The desired data-type for the returned arrays.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>gen</strong> – A generator that yields each transformed datapoint as a tuple of a list of inputs and a parameter dictionary.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">generator</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="dpp.twodim.segmentation.medical.load_slice">
+<code class="descclassname">dpp.twodim.segmentation.medical.</code><code class="descname">load_slice</code><span class="sig-paren">(</span><em>source</em>, <em>slice_type='axial'</em>, <em>dtype=&lt;type 'numpy.float32'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpp/twodim/segmentation/medical.html#load_slice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpp.twodim.segmentation.medical.load_slice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads a random slice from the medical volumes specified by the provided paths.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>source</strong> (<em>iterable</em>) – An iterable over a number of datapoints where each datapoint is a tuple of a list of file paths and a parameter dictionary.</li>
+<li><strong>slice_type</strong> (<em>'coronal'</em><em>, </em><em>'sagittal'</em><em>, </em><em>'axial'</em><em>, or </em><em>None</em>) – The anatomical plane of the returned slices. If None, a plane will be drawn at random for each slice.</li>
+<li><strong>dtype</strong> (<em>data-type</em>) – The desired data-type for the returned arrays.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>gen</strong> – A generator that yields each transformed datapoint as a tuple of a list of inputs and a parameter dictionary.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">generator</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="dpp.twodim.segmentation.medical.load_slice_filtered">
+<code class="descclassname">dpp.twodim.segmentation.medical.</code><code class="descname">load_slice_filtered</code><span class="sig-paren">(</span><em>source</em>, <em>label_of_interest=2</em>, <em>label_required=1</em>, <em>min_frequency=0.8</em>, <em>max_tries=10</em>, <em>depth=1</em>, <em>single_label_slice=False</em>, <em>slice_type='axial'</em>, <em>dtype=&lt;type 'numpy.float32'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpp/twodim/segmentation/medical.html#load_slice_filtered"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpp.twodim.segmentation.medical.load_slice_filtered" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads a random slice which contains the given label of interest from the medical volumes specified by the provided paths. Slices
+are loaded in random order until either a slice with the given label of interest is found or the maximum number of tries has been
+reached.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>source</strong> (<em>iterable</em>) – An iterable over a number of datapoints where each datapoint is a tuple of a list of file paths and a parameter dictionary.</li>
+<li><strong>label_of_interest</strong> (<em>int</em>) – A label that should be present in the returned slice. If depth is greater than 1, only the center plane will be checked.</li>
+<li><strong>label_required</strong> (<em>int</em>) – A label that must be present in the returned slice. If depth is greater than 1, only the center plane will be checked.
+If this is not needed, it can be set to the same number as label_of_interest.</li>
+<li><strong>min_frequency</strong> (<em>float</em>) – The minimum proportion of outputs with the given label of interest. As long as the actual proportion is greater than the given
+minimum frequency, the first randomly drawn slice will be returned from each volume. This can be used to mix slices without
+the label of interest into the training set.</li>
+<li><strong>max_tries</strong> (<em>int</em>) – The maximum number of slices which are drawn in random order from each volume. Once this maximum is reached for a volume, the
+first slice with the given required label is returned.</li>
+<li><strong>depth</strong> (<em>int</em>) – The depth of the slice. Must be an uneven integer greater than zero.</li>
+<li><strong>single_label_slice</strong> (<em>bool</em>) – If False, the returned label slice will have the same depth as the returned image slice. If True, the label slice will have
+depth 1 and correspond to the center plane of the returned image slice.</li>
+<li><strong>slice_type</strong> (<em>'coronal'</em><em>, </em><em>'sagittal'</em><em>, </em><em>'axial'</em><em>, or </em><em>None</em>) – The anatomical plane of the returned slices. If None, a plane will be drawn at random for each volume.</li>
+<li><strong>dtype</strong> (<em>data-type</em>) – The desired data-type for the returned arrays.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>gen</strong> – A generator that yields each transformed datapoint as a tuple of a list of inputs and a parameter dictionary.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">generator</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="dpp.threedim.html" class="btn btn-neutral float-right" title="dpp.threedim package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="dpp.twodim.segmentation.html" class="btn btn-neutral" title="dpp.twodim.segmentation package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Felix Grün.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'1.0.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

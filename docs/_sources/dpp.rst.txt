@@ -1,0 +1,20 @@
+dpp package
+===========
+
+Subpackages
+-----------
+
+.. toctree::
+   :titlesonly:
+
+   dpp.reader
+   dpp.twodim
+   dpp.threedim
+
+
+Module contents
+---------------
+
+.. automodule:: dpp
+    :members:
+    :imported-members:

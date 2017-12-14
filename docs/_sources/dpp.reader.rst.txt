@@ -1,0 +1,9 @@
+dpp\.reader package
+===================
+
+Module contents
+---------------
+
+.. automodule:: dpp.reader
+    :members:
+    :imported-members:

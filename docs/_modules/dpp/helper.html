@@ -1,0 +1,611 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>dpp.helper &mdash; Data Processing Pipeline 1.0.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="Data Processing Pipeline 1.0.0 documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Data Processing Pipeline
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorials and Guides:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial.user.html">Getting Started and User Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial.developer.html">Developer Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">DPP Library Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../dpp.html">Helper functions (dpp package)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../dpp.reader.html">Helper functions (dpp.reader package)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../dpp.twodim.segmentation.html">Segmentation in 2D and 2.5D (dpp.twodim.segmentation package)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../dpp.twodim.segmentation.medical.html">Segmentation in 2D and 2.5D (dpp.twodim.segmentation.medical package)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../dpp.threedim.segmentation.html">Segmentation in 3D (dpp.threedim.segmentation package)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../dpp.threedim.segmentation.medical.html">Segmentation in 3D (dpp.threedim.segmentation.medical package)</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Data Processing Pipeline</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>dpp.helper</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for dpp.helper</h1><div class="highlight"><pre>
+<span></span><span class="c1"># encoding=utf-8</span>
+
+<span class="kn">import</span> <span class="nn">errno</span>
+<span class="kn">import</span> <span class="nn">multiprocessing</span> <span class="k">as</span> <span class="nn">mp</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">os.path</span>
+<span class="kn">import</span> <span class="nn">pickle</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">pipeline</span> <span class="o">=</span> <span class="kc">None</span>
+
+
+<span class="k">def</span> <span class="nf">_generator_func</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">transform</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">datapoint</span> <span class="ow">in</span> <span class="n">source</span><span class="p">:</span>
+        <span class="k">yield</span> <span class="n">transform</span><span class="p">(</span><span class="n">datapoint</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="apply"><a class="viewcode-back" href="../../dpp.html#dpp.apply">[docs]</a><span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">transform</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Turns a normal function into a generator and registers it with the current pipeline.</span>
+
+<span class="sd">    The function must accept whatever the given source yields and return a transformed datapoint based on its input.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    source : iterable</span>
+<span class="sd">        An iterable over a number of datapoints that transform accepts.</span>
+<span class="sd">    transform : function</span>
+<span class="sd">        A function that transforms each datapoint that source yields.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gen : generator</span>
+<span class="sd">        A generator that yields the output of transform.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">gen</span> <span class="o">=</span> <span class="n">_generator_func</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">transform</span><span class="p">)</span>
+    <span class="n">sign_up</span><span class="p">(</span><span class="n">gen</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">gen</span></div>
+
+
+<div class="viewcode-block" id="current_pipeline"><a class="viewcode-back" href="../../dpp.html#dpp.current_pipeline">[docs]</a><span class="k">def</span> <span class="nf">current_pipeline</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the current pipeline.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">pipeline</span>
+    <span class="k">return</span> <span class="n">pipeline</span></div>
+
+
+<div class="viewcode-block" id="sign_up"><a class="viewcode-back" href="../../dpp.html#dpp.sign_up">[docs]</a><span class="k">def</span> <span class="nf">sign_up</span><span class="p">(</span><span class="n">generator</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Signs up a generator with the current pipeline.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">pipeline</span>
+    <span class="k">if</span> <span class="n">pipeline</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">pipeline</span><span class="o">.</span><span class="n">sign_up</span><span class="p">(</span><span class="n">generator</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Pipeline"><a class="viewcode-back" href="../../dpp.html#dpp.Pipeline">[docs]</a><span class="k">class</span> <span class="nc">Pipeline</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A pipeline is not strictly needed, but offers a number of useful services. It should always be used in a with-block.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">storage_name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">initialization_generator</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">my_id</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">to_close</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">to_initialize</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">registered</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parameter_store</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">storage_name</span> <span class="o">=</span> <span class="n">storage_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">folder_name</span> <span class="o">=</span> <span class="s2">&quot;temp&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initialization_generator</span> <span class="o">=</span> <span class="n">initialization_generator</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_generator</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">global</span> <span class="n">pipeline</span>
+
+        <span class="k">if</span> <span class="n">pipeline</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">pipeline</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">register_close</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">pipeline</span> <span class="o">=</span> <span class="bp">self</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_load_parameter_store</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="nf">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_value</span><span class="p">,</span> <span class="n">traceback</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_initialize_all</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_save_parameter_store</span><span class="p">()</span>
+
+        <span class="k">global</span> <span class="n">pipeline</span>
+        <span class="n">pipeline</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span>
+
+    <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="nf">next</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_generator</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_generator</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+        <span class="k">raise</span> <span class="ne">StopIteration</span>
+
+    <span class="k">def</span> <span class="nf">_load_parameter_store</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage_name</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">my_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">storage_name</span><span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">has_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">my_id</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">parameter_store</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">load_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">my_id</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">folder_name</span><span class="p">):</span>
+                <span class="n">store</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">folder_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage_name</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">store</span><span class="p">):</span>
+                    <span class="nb">print</span> <span class="s1">&#39;Found dictionary file &quot;</span><span class="si">{}</span><span class="s1">&quot;. Loading dictionary...&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">storage_name</span><span class="p">)</span>
+                    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">store</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">infile</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">parameter_store</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">infile</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_save_parameter_store</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage_name</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">my_id</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">my_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">storage_name</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">store_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">my_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameter_store</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">folder_name</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">exception</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">exception</span><span class="o">.</span><span class="n">errno</span> <span class="o">!=</span> <span class="n">errno</span><span class="o">.</span><span class="n">EEXIST</span><span class="p">:</span>
+                        <span class="k">raise</span>
+                <span class="n">store</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">folder_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage_name</span><span class="p">)</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">store</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">outfile</span><span class="p">:</span>
+                    <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameter_store</span><span class="p">,</span> <span class="n">outfile</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_initialize_all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">initialization_generator</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">to_initialize</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+
+            <span class="k">for</span> <span class="n">datapoint</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">initialization_generator</span><span class="p">:</span>
+
+                <span class="c1"># Standard case, copy the arrays and the dictionary</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">datapoint</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># only test if type indexable</span>
+
+                        <span class="n">inputs</span> <span class="o">=</span> <span class="n">datapoint</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                        <span class="n">rest</span> <span class="o">=</span> <span class="n">datapoint</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+
+                        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># test if type indexable</span>
+
+                            <span class="k">for</span> <span class="n">init_func</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_initialize</span><span class="p">:</span>
+
+                                <span class="n">cpy</span> <span class="o">=</span> <span class="p">[[</span><span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">ary</span><span class="p">)</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">ary</span><span class="p">)</span> <span class="ow">is</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="k">else</span> <span class="n">ary</span> <span class="k">for</span> <span class="n">ary</span> <span class="ow">in</span> <span class="n">inputs</span><span class="p">]]</span>
+
+                                <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">rest</span><span class="p">:</span>
+                                    <span class="k">try</span><span class="p">:</span>
+                                        <span class="n">elem</span> <span class="o">=</span> <span class="n">elem</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                                    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                                        <span class="k">pass</span>
+                                    <span class="n">cpy</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">elem</span><span class="p">)</span>
+
+                                <span class="n">init_func</span><span class="p">(</span><span class="n">cpy</span><span class="p">)</span>
+
+                <span class="c1"># Other cases, makes code reusable</span>
+                <span class="k">except</span> <span class="ne">TypeError</span><span class="p">,</span> <span class="ne">IndexError</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">init_func</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_initialize</span><span class="p">:</span>
+                        <span class="n">init_func</span><span class="p">(</span><span class="n">datapoint</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Pipeline.register_close"><a class="viewcode-back" href="../../dpp.html#dpp.Pipeline.register_close">[docs]</a>    <span class="k">def</span> <span class="nf">register_close</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Register an object that has to be closed after use with the pipeline, so that close is called on this object,</span>
+<span class="sd">        when the pipeline is closed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">to_close</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Pipeline.close"><a class="viewcode-back" href="../../dpp.html#dpp.Pipeline.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Close the pipeline and all objects that were registered to be closed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_close</span><span class="p">:</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">to_close</span> <span class="o">=</span> <span class="p">[]</span></div>
+
+<div class="viewcode-block" id="Pipeline.store_value"><a class="viewcode-back" href="../../dpp.html#dpp.Pipeline.store_value">[docs]</a>    <span class="k">def</span> <span class="nf">store_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">my_id</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Allows registered functions to store a value or object. This can be used to carry over values that were set during</span>
+<span class="sd">        initialization into otherwise side-effect free transformation functions.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">my_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">registered</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parameter_store</span><span class="p">[</span><span class="n">my_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The id </span><span class="si">{}</span><span class="s2"> is unknown. Have you used Pipeline.register(name) to obtain an id? Have you used the returned id for this call to Pipeline.store_value(id, value)?&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">my_id</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Pipeline.has_value"><a class="viewcode-back" href="../../dpp.html#dpp.Pipeline.has_value">[docs]</a>    <span class="k">def</span> <span class="nf">has_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">my_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if a value was stored for the given id.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">my_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameter_store</span></div>
+
+<div class="viewcode-block" id="Pipeline.load_value"><a class="viewcode-back" href="../../dpp.html#dpp.Pipeline.load_value">[docs]</a>    <span class="k">def</span> <span class="nf">load_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">my_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a stored value for the given id or None if no value was stored.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">my_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameter_store</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameter_store</span><span class="p">[</span><span class="n">my_id</span><span class="p">]</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="Pipeline.register"><a class="viewcode-back" href="../../dpp.html#dpp.Pipeline.register">[docs]</a>    <span class="k">def</span> <span class="nf">register</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Register a function with the pipeline. Returns an id that can be used to store values.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">while</span> <span class="n">name</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">registered</span><span class="p">:</span>
+            <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="n">_id</span> <span class="o">=</span> <span class="n">name</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">registered</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_id</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">_id</span></div>
+
+<div class="viewcode-block" id="Pipeline.offers_initialization"><a class="viewcode-back" href="../../dpp.html#dpp.Pipeline.offers_initialization">[docs]</a>    <span class="k">def</span> <span class="nf">offers_initialization</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check whether the pipeline was supplied with an iterable that supplies datapoints for initialization.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">initialization_generator</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="Pipeline.initialize"><a class="viewcode-back" href="../../dpp.html#dpp.Pipeline.initialize">[docs]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">init_func</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Register an initialization function. The function will be supplied with datapoints from the initialization iterable of</span>
+<span class="sd">        the pipeline once the pipeline definition is completed and the with-block is exited.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">to_initialize</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">init_func</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Pipeline.sign_up"><a class="viewcode-back" href="../../dpp.html#dpp.Pipeline.sign_up">[docs]</a>    <span class="k">def</span> <span class="nf">sign_up</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">generator</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sign up a generator as the current generator. This is used, so the pipeline can itself be used as an iterable.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_generator</span> <span class="o">=</span> <span class="n">generator</span></div></div>
+
+
+<span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">init_func</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">initialization_generator</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+    <span class="k">global</span> <span class="n">pipeline</span>
+    <span class="n">pipe</span> <span class="o">=</span> <span class="n">pipeline</span>
+    <span class="n">my_id</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="c1"># If possible load object from pipeline</span>
+    <span class="k">if</span> <span class="n">pipe</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">my_id</span> <span class="o">=</span> <span class="n">pipe</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">pipe</span><span class="o">.</span><span class="n">has_value</span><span class="p">(</span><span class="n">my_id</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">pipe</span><span class="o">.</span><span class="n">load_value</span><span class="p">(</span><span class="n">my_id</span><span class="p">),</span> <span class="n">my_id</span>
+
+    <span class="c1"># Else initialize object</span>
+    <span class="c1"># Here the initialization_generator takes precedence over pipeline initialization</span>
+    <span class="k">if</span> <span class="n">initialization_generator</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">datapoint</span> <span class="ow">in</span> <span class="n">initialization_generator</span><span class="p">:</span>
+            <span class="n">init_func</span><span class="p">(</span><span class="n">datapoint</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">pipe</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">pipe</span><span class="o">.</span><span class="n">offers_initialization</span><span class="p">():</span>
+        <span class="n">pipe</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">init_func</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="c1"># If possible store the obj value</span>
+    <span class="k">if</span> <span class="n">pipe</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">obj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">pipe</span><span class="o">.</span><span class="n">store_value</span><span class="p">(</span><span class="n">my_id</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">obj</span><span class="p">,</span> <span class="n">my_id</span>
+
+
+<span class="k">class</span> <span class="nc">ProcessManager</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">processes</span><span class="p">,</span> <span class="n">buffer_size</span><span class="p">):</span>
+
+        <span class="k">global</span> <span class="n">pipeline</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pipe</span> <span class="o">=</span> <span class="n">pipeline</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">started</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">source</span> <span class="o">=</span> <span class="n">source</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">processes</span> <span class="o">=</span> <span class="n">processes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">buffer_size</span> <span class="o">=</span> <span class="n">buffer_size</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">queue</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">process_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">counter</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mutex</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">started</span><span class="p">:</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">queue</span> <span class="o">=</span> <span class="n">mp</span><span class="o">.</span><span class="n">Queue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffer_size</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">process_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">mp</span><span class="o">.</span><span class="n">Process</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_execute</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">queue</span><span class="p">))</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">processes</span><span class="p">)]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">counter</span> <span class="o">=</span> <span class="n">mp</span><span class="o">.</span><span class="n">Value</span><span class="p">(</span><span class="s1">&#39;i&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">counter</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mutex</span> <span class="o">=</span> <span class="n">mp</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_start_processes</span><span class="p">()</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pipe</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pipe</span><span class="o">.</span><span class="n">register_close</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">started</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="nf">_start_processes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">process</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">process_list</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">process</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
+                <span class="n">process</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+                <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">mutex</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">counter</span><span class="o">.</span><span class="n">value</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">mutex</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">counter</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">queue</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">process</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">process_list</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">process</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
+                    <span class="n">process</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
+                    <span class="n">process</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="nf">next</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">started</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">mutex</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">counter</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">StopIteration</span>
+
+            <span class="n">datapoint</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">queue</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">datapoint</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">counter</span><span class="o">.</span><span class="n">value</span> <span class="o">-=</span> <span class="mi">1</span>
+
+        <span class="k">return</span> <span class="n">datapoint</span> <span class="k">if</span> <span class="n">datapoint</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">queue</span><span class="p">):</span>
+
+        <span class="c1"># reseed random number generators to make sure every process generates different random numbers</span>
+        <span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">()</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">datapoint</span> <span class="ow">in</span> <span class="n">source</span><span class="p">:</span>
+            <span class="n">queue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">datapoint</span><span class="p">)</span>
+
+        <span class="n">queue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="run_on"><a class="viewcode-back" href="../../dpp.html#dpp.run_on">[docs]</a><span class="k">def</span> <span class="nf">run_on</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">processes</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">buffer_size</span><span class="o">=</span><span class="mi">16</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Runs the pipeline from the last call to run_on up to source in parallel on the given number of processes.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    source : iterable</span>
+<span class="sd">        An iterable over a number of datapoints.</span>
+<span class="sd">    ṕrocesses : int</span>
+<span class="sd">        The number of processes to run in parallel.</span>
+<span class="sd">    buffer_size: int</span>
+<span class="sd">        The size of the buffer, where the output of the processes is stored.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gen : generator</span>
+<span class="sd">        A generator that yields the output of the given source.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">IPython</span> <span class="k">import</span> <span class="n">get_ipython</span>
+        <span class="k">if</span> <span class="n">get_ipython</span><span class="p">()</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">cfg</span> <span class="o">=</span> <span class="n">get_ipython</span><span class="p">()</span><span class="o">.</span><span class="n">config</span>
+            <span class="k">if</span> <span class="s2">&quot;IPKernelApp&quot;</span> <span class="ow">in</span> <span class="n">cfg</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Multiprocessing might crash in iPython Notebooks&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+        <span class="k">pass</span>
+
+    <span class="k">return</span> <span class="n">ProcessManager</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">processes</span><span class="p">,</span> <span class="n">buffer_size</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Felix Grün.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'1.0.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

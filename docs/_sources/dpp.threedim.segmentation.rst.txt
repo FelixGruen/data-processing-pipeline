@@ -1,0 +1,16 @@
+dpp\.threedim\.segmentation package
+===================================
+
+
+.. toctree::
+   :titlesonly:
+
+   dpp.threedim.segmentation.medical
+
+
+Module contents
+---------------
+
+.. automodule:: dpp.threedim.segmentation
+    :members:
+    :imported-members:

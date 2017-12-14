@@ -1,0 +1,10 @@
+dpp\.twodim\.segmentation\.medical package
+=================================
+
+
+Module contents
+---------------
+
+.. automodule:: dpp.twodim.segmentation.medical
+    :members:
+    :imported-members:

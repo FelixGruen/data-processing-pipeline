@@ -1,0 +1,44 @@
+.. Data Processing Pipeline documentation master file, created by
+   sphinx-quickstart on Mon Oct  9 16:08:50 2017.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+Data Processing Pipeline
+========================
+
+Welcome to the Data Processing Pipeline documentation and guide. Here you will find tutorials for programmers and users, as well as the complete library reference.
+
+The Data Processing Pipeline library was developed to help machine learning researchers working with large training sets of image data in general and medical imaging data in particular to easily set-up, structure, and change their pre-processing during experiments.
+
+The Data Processing Pipeline is organized into transformations. Each transformation does exactly one thing. One transformation might clip all values to a certain range, while another might rotate an image. The functions that define a transformation actually set up a generator that reads from a Python iterator (or generator) and applies the transformation to each of its input. This means that a pipeline can be used with any other iterator and can be used like any other iterator, for example, you can iterate through all elements using a for-loop. This structure creates very readable, easily adaptable code.
+
+For a more in-depth introduction, have a look at the tutorials. For descriptions of all available transformations, please see the Library Reference.
+
+.. toctree::
+   :caption: Tutorials and Guides:
+   :titlesonly:
+   :maxdepth: 1
+
+   Getting Started and User Tutorial <tutorial.user>
+   Developer Tutorial <tutorial.developer>
+
+.. toctree::
+   :caption: DPP Library Reference:
+   :titlesonly:
+   :maxdepth: 1
+
+   Helper functions (dpp package) <dpp>
+   Helper functions (dpp.reader package) <dpp.reader>
+   Segmentation in 2D and 2.5D (dpp.twodim.segmentation package) <dpp.twodim.segmentation>
+   Segmentation in 2D and 2.5D (dpp.twodim.segmentation.medical package) <dpp.twodim.segmentation.medical>
+   Segmentation in 3D (dpp.threedim.segmentation package) <dpp.threedim.segmentation>
+   Segmentation in 3D (dpp.threedim.segmentation.medical package) <dpp.threedim.segmentation.medical>
+
+
+
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`

@@ -1,0 +1,346 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>genericpath &mdash; Data Processing Pipeline 1.0.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="Data Processing Pipeline 1.0.0 documentation" href="../index.html"/>
+        <link rel="up" title="Module code" href="index.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Data Processing Pipeline
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorials and Guides:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.user.html">Getting Started and User Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.developer.html">Developer Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">DPP Library Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../dpp.html">Helper functions (dpp package)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dpp.reader.html">Helper functions (dpp.reader package)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dpp.twodim.segmentation.html">Segmentation in 2D and 2.5D (dpp.twodim.segmentation package)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dpp.twodim.segmentation.medical.html">Segmentation in 2D and 2.5D (dpp.twodim.segmentation.medical package)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dpp.threedim.segmentation.html">Segmentation in 3D (dpp.threedim.segmentation package)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dpp.threedim.segmentation.medical.html">Segmentation in 3D (dpp.threedim.segmentation.medical package)</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Data Processing Pipeline</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">Module code</a> &raquo;</li>
+        
+      <li>genericpath</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for genericpath</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Path operations common to more than one OS</span>
+<span class="sd">Do not use directly.  The OS specific modules import the appropriate</span>
+<span class="sd">functions from this module themselves.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">stat</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;commonprefix&#39;</span><span class="p">,</span> <span class="s1">&#39;exists&#39;</span><span class="p">,</span> <span class="s1">&#39;getatime&#39;</span><span class="p">,</span> <span class="s1">&#39;getctime&#39;</span><span class="p">,</span> <span class="s1">&#39;getmtime&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;getsize&#39;</span><span class="p">,</span> <span class="s1">&#39;isdir&#39;</span><span class="p">,</span> <span class="s1">&#39;isfile&#39;</span><span class="p">]</span>
+
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">_unicode</span> <span class="o">=</span> <span class="n">unicode</span>
+<span class="k">except</span> <span class="ne">NameError</span><span class="p">:</span>
+    <span class="c1"># If Python is built without Unicode support, the unicode type</span>
+    <span class="c1"># will not exist. Fake one.</span>
+    <span class="k">class</span> <span class="nc">_unicode</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+<span class="c1"># Does a path exist?</span>
+<span class="c1"># This is false for dangling symbolic links on systems that support them.</span>
+<span class="k">def</span> <span class="nf">exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Test whether a path exists.  Returns False for broken symbolic links&quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">os</span><span class="o">.</span><span class="n">error</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="kc">True</span>
+
+
+<span class="c1"># This follows symbolic links, so both islink() and isdir() can be true</span>
+<span class="c1"># for the same path on systems that support symlinks</span>
+<div class="viewcode-block" id="isfile"><a class="viewcode-back" href="../dpp.reader.html#dpp.reader.isfile">[docs]</a><span class="k">def</span> <span class="nf">isfile</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Test whether a path is a regular file&quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">st</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">os</span><span class="o">.</span><span class="n">error</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="n">stat</span><span class="o">.</span><span class="n">S_ISREG</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">st_mode</span><span class="p">)</span></div>
+
+
+<span class="c1"># Is a path a directory?</span>
+<span class="c1"># This follows symbolic links, so both islink() and isdir()</span>
+<span class="c1"># can be true for the same path on systems that support symlinks</span>
+<span class="k">def</span> <span class="nf">isdir</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return true if the pathname refers to an existing directory.&quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">st</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">os</span><span class="o">.</span><span class="n">error</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="n">stat</span><span class="o">.</span><span class="n">S_ISDIR</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">st_mode</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">getsize</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return the size of a file, reported by os.stat().&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span><span class="o">.</span><span class="n">st_size</span>
+
+
+<span class="k">def</span> <span class="nf">getmtime</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return the last modification time of a file, reported by os.stat().&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span><span class="o">.</span><span class="n">st_mtime</span>
+
+
+<span class="k">def</span> <span class="nf">getatime</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return the last access time of a file, reported by os.stat().&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span><span class="o">.</span><span class="n">st_atime</span>
+
+
+<span class="k">def</span> <span class="nf">getctime</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return the metadata change time of a file, reported by os.stat().&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span><span class="o">.</span><span class="n">st_ctime</span>
+
+
+<span class="c1"># Return the longest prefix of all list elements.</span>
+<span class="k">def</span> <span class="nf">commonprefix</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
+    <span class="s2">&quot;Given a list of pathnames, returns the longest common leading component&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">m</span><span class="p">:</span> <span class="k">return</span> <span class="s1">&#39;&#39;</span>
+    <span class="n">s1</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+    <span class="n">s2</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">s1</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">c</span> <span class="o">!=</span> <span class="n">s2</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="n">s1</span><span class="p">[:</span><span class="n">i</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">s1</span>
+
+<span class="c1"># Split a path in root and extension.</span>
+<span class="c1"># The extension is everything starting at the last dot in the last</span>
+<span class="c1"># pathname component; the root is everything before that.</span>
+<span class="c1"># It is always true that root + ext == p.</span>
+
+<span class="c1"># Generic implementation of splitext, to be parametrized with</span>
+<span class="c1"># the separators</span>
+<span class="k">def</span> <span class="nf">_splitext</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">sep</span><span class="p">,</span> <span class="n">altsep</span><span class="p">,</span> <span class="n">extsep</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Split the extension from a pathname.</span>
+
+<span class="sd">    Extension is everything from the last dot to the end, ignoring</span>
+<span class="sd">    leading dots.  Returns &quot;(root, ext)&quot;; ext may be empty.&quot;&quot;&quot;</span>
+
+    <span class="n">sepIndex</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">rfind</span><span class="p">(</span><span class="n">sep</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">altsep</span><span class="p">:</span>
+        <span class="n">altsepIndex</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">rfind</span><span class="p">(</span><span class="n">altsep</span><span class="p">)</span>
+        <span class="n">sepIndex</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">sepIndex</span><span class="p">,</span> <span class="n">altsepIndex</span><span class="p">)</span>
+
+    <span class="n">dotIndex</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">rfind</span><span class="p">(</span><span class="n">extsep</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">dotIndex</span> <span class="o">&gt;</span> <span class="n">sepIndex</span><span class="p">:</span>
+        <span class="c1"># skip all leading dots</span>
+        <span class="n">filenameIndex</span> <span class="o">=</span> <span class="n">sepIndex</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="k">while</span> <span class="n">filenameIndex</span> <span class="o">&lt;</span> <span class="n">dotIndex</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">p</span><span class="p">[</span><span class="n">filenameIndex</span><span class="p">]</span> <span class="o">!=</span> <span class="n">extsep</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">p</span><span class="p">[:</span><span class="n">dotIndex</span><span class="p">],</span> <span class="n">p</span><span class="p">[</span><span class="n">dotIndex</span><span class="p">:]</span>
+            <span class="n">filenameIndex</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="k">return</span> <span class="n">p</span><span class="p">,</span> <span class="s1">&#39;&#39;</span>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Felix Grün.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'1.0.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
