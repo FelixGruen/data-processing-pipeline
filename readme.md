@@ -1,3 +1,5 @@
+**The code for this project was developed during my master studies at TU Munich. I have graduated since then and unfortunately I currently don't have the time to provide support for this project. I will leave the documentation and code online, but please note that they are provided as is.**
+
 # The Data Processing Pipeline library
 
 The **Data Processing Pipeline** (dpp) library was developed to help machine learning researchers working with large training sets of image data in general and medical imaging data in particular to easily set-up, structure, and change their pre-processing during experiments.
